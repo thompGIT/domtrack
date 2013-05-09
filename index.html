@@ -1,0 +1,173 @@
+<html>
+    <head>
+        <title>
+            DomTrack - Dominion Tracking Software
+        </title>
+        <link rel=StyleSheet href="stylesheet.css" type="text/css">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./HighCharts/js/highcharts.js"></script>
+        <script type="text/javascript" src="./domtrack.js"></script>
+    </head>
+
+    <body onload="domtrackInit()">
+    <body style="margin:0px">
+
+        <!-- MODE SELECTION -->
+        <div class="menu">
+            DomTrack: 
+            <input type=submit class="menu" onclick="showPlay()"      value="Play" />
+            <input type=submit class="menu" onclick="showShuffler()"  value="Shuffle" />
+            <input type=submit class="menu" onclick="showStats()"     value="Overall Stats" />
+            <input type=submit class="menu" onclick="showIStats()"    value="Individual Stats" />
+            <input type=submit class="menu" onclick="showGamesList()" value="Games History" />
+            <input type=submit class="menu" onclick="showAdmin()"     value="Admin" />
+        </div>
+
+        <!-- MODE: PLAY -->
+        <div id="play">
+            <input type=hidden name="op" value="record">
+            <table width="100%" cellpadding=12 cellspacing=0>
+                <tr>
+                    <th bgcolor="#5882FA">Players</th>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P1:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P2:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P3:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P4:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P5:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P6:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P7:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div style="overflow: hidden" class=playerWhite>
+                            P8:
+                            <select id=a1 onchange='selChange_cb(this)'>
+                                <!-- populated by js -->
+                            </select>
+                            <span id=a1_stats></span>
+                            <span class="predict" id=a1_predict></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <input id="Record" class="SubmitButton" type=submit value="Record"        onClick="recordGame(this)">
+                        <input name=""     class="SubmitButton" type=submit value="clear &#x21bb" onClick="clearPlayers(this)">
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- MODE: OVERALL STATS -->
+        <div id="stats" style="margin: 1em">
+            <div id="LeaderBoard" style="text-align:center"></div>
+            <br>
+            <div id="AllRatingsVsGamesGraph_status"></div>
+            <div id="AllRatingsVsGamesGraph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+            <br>
+            <div id="AllRatingsHistoryGraph_status"></div>
+            <div id="AllRatingsHistoryGraph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        </div>
+
+        <!-- MODE: INDIVIDUAL STATS -->
+        <div id="istats" style="margin: 1em">
+            Choose Player: <select id="istatsPlayerChoice" onchange='istatsPlayerChoice_cb(this)'>
+            </select> 
+            <br><br>
+            <div id="IStatsExtended" style="text-align:center"></div>
+            <br>
+            <div id="ResultsVsPartnersGraph_status"></div>
+            <div id="ResultsVsPartnersGraph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+            <br>
+            <div id="ResultsVsOpponentsGraph_status"></div>
+            <div id="ResultsVsOpponentsGraph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        </div>
+
+        <!-- MODE: GAMES LIST -->
+        <div id="games" style="margin: 1em">
+        </div>
+
+        <!-- MODE: ADMIN (add user / etc.) -->
+        <div id="admin">
+            <h3>Admin Page! (add new user, etc.)</h3>
+        </div>
+
+    </body>
+</html>
