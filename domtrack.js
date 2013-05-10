@@ -158,10 +158,11 @@ var elem_istatsPlayerChoice
  *****************************************************************************/
 
 /* called when the page loads */
-function bugtrackInit(x) {
+function domtrackInit(x) {
+
     /* overall modes; play is the default */
     showElems.push(document.getElementById("play"))
-    showElems.push(document.getElementById("scheduler"))
+    showElems.push(document.getElementById("shuffle"))
     showElems.push(document.getElementById("stats"))
     showElems.push(document.getElementById("istats"))
     showElems.push(document.getElementById("games"))
@@ -169,77 +170,51 @@ function bugtrackInit(x) {
     showPlay()
 
     /* play mode */
-    elem_a1 = document.getElementById("a1")
-    elem_a2 = document.getElementById("a2")
-    elem_b1 = document.getElementById("b1")
-    elem_b2 = document.getElementById("b2")
-    playerElems = [elem_a1, elem_a2, elem_b1, elem_b2]
+    elem_p1 = document.getElementById("p1")
+    elem_p2 = document.getElementById("p2")
+    elem_p3 = document.getElementById("p3")
+    elem_p4 = document.getElementById("p4")
+    elem_p5 = document.getElementById("p5")
+    elem_p6 = document.getElementById("p6")
+    playerElems = [elem_p1, elem_p2, elem_p3, elem_p4, elem_p5, elem_p6]
 
-    elem_a1stats = document.getElementById("a1_stats")
-    elem_a2stats = document.getElementById("a2_stats")
-    elem_b1stats = document.getElementById("b1_stats")
-    elem_b2stats = document.getElementById("b2_stats")
-
-    elem_a1predict = document.getElementById("a1_predict")
-    elem_a2predict = document.getElementById("a2_predict")
-    elem_b1predict = document.getElementById("b1_predict")
-    elem_b2predict = document.getElementById("b2_predict")
-
-    /* scheduler mode */
-    elem_schedPlayerList = document.getElementById("schedulerPlayerList")
-    schedCheckElems = []
-    schedDisplayElems = []
-
+    elem_p1stats = document.getElementById("p1_stats")
+    elem_p2stats = document.getElementById("p2_stats")
+    elem_p3stats = document.getElementById("p3_stats")
+    elem_p4stats = document.getElementById("p4_stats")
+    elem_p5stats = document.getElementById("p5_stats")
+    elem_p6stats = document.getElementById("p6_stats")
+    
     /* individual stats mode */
-    elem_istatsPlayerChoice = document.getElementById("istatsPlayerChoice")
+/*    elem_istatsPlayerChoice = document.getElementById("istatsPlayerChoice")    */
 
     /* init global player vars */
     var resp = ajax('cgi/jsIface.py?op=getplayers')
     var lines = resp.split("\n")
     for(var j in lines) {
-        var m = lines[j].match(/^(.*),(.*),(.*),(.*)$/)
+        var m = lines[j].match(/^(.*),(.*),(.*),(.*),(.*)$/)
 
         if(m) {
             playerName = m[1]
             playerNames.push(playerName)
-            playerToR[playerName] = parseInt(m[2])
+            /*
+            playerToR[playerName]  = parseInt(m[2])
             playerToRD[playerName] = parseInt(m[3])
-            playerToT[playerName] = parseInt(m[4])
+            playerToT[playerName]  = parseInt(m[4])
+            playerToT[playerName]  = parseInt(m[5])
+            */
         }
     }
 
     /* populate player choice drop-downs */
     playerNames.sort()
-    var elems = [elem_a1, elem_a2, elem_b1, elem_b2, istatsPlayerChoice]
+    var elems = [elem_p1, elem_p2, elem_p3, elem_p4, elem_p5, elem_p6]
     for(var i in elems) {
         elems[i].value = ''
         elems[i].innerHTML = '<option></option>'
-
         for(var j in playerNames) {
             elems[i].innerHTML += "<option>" + playerNames[j] + "</option>"
         }
-    }
-
-    /* populate the scheduler */
-    var html = '<table><tr>'
-    for(var j in playerNames) {
-        if(!(j%3)) {
-            html += '</tr><tr>'
-        }
-        html += '<td>'
-        html += '<input id=schedCheck' + j + ' type=\"checkbox\" value=\"' + playerNames[j] + '"'
-        html += ' onclick="schedTogglePlayer(this, \'' + playerNames[j] + '\')" />'
-        html += '<span id=schedDisplay' + j + '>' + playerNames[j] + '</span>'
-        html += "</td>"
-    }
-    html += '</tr></table>'
-    elem_schedPlayerList.innerHTML = html
-    debug(html)
-
-    /* populate schedule element list */
-    for(var j in playerNames) {
-        schedCheckElems.push(document.getElementById('schedCheck' + j))
-        schedDisplayElems.push(document.getElementById('schedDisplay' + j))
     }
 
     /* populate the ratings */
@@ -255,7 +230,9 @@ function hideAllBut(e) {
             showElems[i].style.display = 'block'
         }
         else {
-            showElems[i].style.display = 'none'
+            try { 
+                showElems[i].style.display = 'none'
+            } catch (err) { }            
         }
     }
 }
