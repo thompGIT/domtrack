@@ -31,8 +31,8 @@ class DbSqlite():
             ['P6Rating','REAL'],     # Player 6 Rating
             ['P7',      'TEXT'],     # Player 7
             ['P7Rating','REAL'],     # Player 7 Rating
-            ['P8',      'TEXT']]     # Player 8
-            ['P8Rating','REAL'],     # Player 8 Rating
+            ['P8',      'TEXT'],     # Player 8
+            ['P8Rating','REAL']]     # Player 8 Rating
     SCHEMA_PLAYERS = [
             ['name',  'TEXT PRIMARY KEY'],  # Player Name
             ['rating','REAL'],              # Rating
@@ -109,10 +109,10 @@ class DbSqlite():
     #--------------------------------------------------------------------------
     # set player stats
     #--------------------------------------------------------------------------
-    def addPlayer(self, name, rating=0.0, mu=25.0, sigma=8.33 t=0):
-        self.c.execute('INSERT into players value(?,?,?,?,?)', name, rating, mu, sigma, t)
+    def addPlayer(self, name, rating=0.0, mu=25.0, sigma=8.33, t=0):
+        self.c.execute('INSERT into players values(?,?,?,?,?)', (name, rating, mu, sigma, t))
         self.conn.commit()
-
+        
     def setPlayerRating(self, name, r):
         self.c.execute('UPDATE players SET rating=?', (r,))
         self.conn.commit()

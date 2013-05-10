@@ -68,22 +68,15 @@ if op == 'deleteGame':
 if op == 'getplayers':
     pl = db.getPlayerList()
     for p in pl:
-        [rating, rd, t] = db.getPlayerStats(p)
-        print "%s,%d,%d,%d" % (p, rating, rd, t)
+        [rating, mu, sigma, t] = db.getPlayerStats(p)
+        print "%s,%d,%d,%d,%d" % (p, rating, mu, sigma, t)
 
 if op == 'getstats':
     player = form['player'].value
     pl = db.getPlayerList()
     if player in pl:
-        [rating, rd, t] = db.getPlayerStats(player)
-        print "%d,%d,%d" % (rating, rd, t)
-
-if op == 'getcardstats':
-    player = form['player'].value
-    pl = db.getPlayerList()
-    if player in pl:
-        [rating,rd,rank,wins,losses,streak] = db.getPlayerCardStats(player)
-        print "%d,%d,%d,%d,%d,%d" % (rating,rd,rank,wins,losses,streak)
+        [rating, mu, sigma, t] = db.getPlayerStats(player)
+        print "%d,%d,%d,%d" % (rating, mu, sigma, t)
 
 if op == 'getstatsextended':
     player = form['player'].value
