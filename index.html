@@ -28,71 +28,131 @@
             <input type=hidden name="op" value="record">
             <table width="100%" cellpadding=12 cellspacing=0>
                 <tr>
-                    <th bgcolor="#5882FA">Players</th>
-                </tr>
-                <tr>
                     <td bgcolor="#5882FA">
-                        <div style="overflow: hidden" class=playerWhite>
-                            P1:
-                            <select id=p1 onchange='selChange_cb(this)'>
-                                <!-- populated by js -->
-                            </select>
-                            <span id=p1_stats></span>
+                        <div class=playerSelectHeader bgcolor="#5882FA">
+                            <div class=playerSelectHeaderTitle>Players</div>
+                            <div class=playerSelectHeaderStats>Stats</div>
+                            <div class=playerSelectHeaderScore>VP</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td bgcolor="#5882FA">
-                        <div style="overflow: hidden" class=playerWhite>
-                            P2:
-                            <select id=p2 onchange='selChange_cb(this)'>
-                                <!-- populated by js -->
-                            </select>
-                            <span id=p2_stats></span>
+                        <div class=playerSelect>
+                            <div class=playerSelectTitle>P1:</div>
+                            <div class=playerSelectCombo>
+                                <select id=p1 
+                                    class=comboPlayer 
+                                    onchange='selChange_cb(this)'>
+                                </select>
+                            </div>
+                            <div id=p1_stats class=playerSelectStats></div>
+                            <div class=playerSelectScore>
+                                <input id=p1_vp    
+                                    class=tbVP 
+                                    type="number">
+                                </input>
+                            </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td bgcolor="#5882FA">
-                        <div style="overflow: hidden" class=playerWhite>
-                            P3:
-                            <select id=p3 onchange='selChange_cb(this)'>
-                                <!-- populated by js -->
-                            </select>
-                            <span id=p3_stats></span>
+                        <div class=playerSelect>
+                            <div class=playerSelectTitle>P2:</div>
+                            <div class=playerSelectCombo>
+                                <select id=p2 
+                                    class=comboPlayer 
+                                    onchange='selChange_cb(this)'>
+                                </select>
+                            </div>
+                            <div id=p2_stats class=playerSelectStats></div>
+                            <div class=playerSelectScore>
+                                <input id=p2_vp    
+                                    class=tbVP 
+                                    type="number">
+                                </input>
+                            </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td bgcolor="#5882FA">
-                        <div style="overflow: hidden" class=playerWhite>
-                            P4:
-                            <select id=p4 onchange='selChange_cb(this)'>
-                                <!-- populated by js -->
-                            </select>
-                            <span id=p4_stats></span>
+                        <div class=playerSelect>
+                            <div class=playerSelectTitle>P3:</div>
+                            <div class=playerSelectCombo>
+                                <select id=p3 
+                                    class=comboPlayer 
+                                    onchange='selChange_cb(this)'>
+                                </select>
+                            </div>
+                            <div id=p3_stats class=playerSelectStats></div>
+                            <div class=playerSelectScore>
+                                <input id=p3_vp    
+                                    class=tbVP 
+                                    type="number">
+                                </input>
+                            </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td bgcolor="#5882FA">
-                        <div style="overflow: hidden" class=playerWhite>
-                            P5:
-                            <select id=p5 onchange='selChange_cb(this)'>
-                                <!-- populated by js -->
-                            </select>
-                            <span id=p5_stats></span>
+                        <div class=playerSelect>
+                            <div class=playerSelectTitle>P4:</div>
+                            <div class=playerSelectCombo>
+                                <select id=p4 
+                                    class=comboPlayer 
+                                    onchange='selChange_cb(this)'>
+                                </select>
+                            </div>
+                            <div id=p4_stats class=playerSelectStats></div>
+                            <div class=playerSelectScore>
+                                <input id=p4_vp    
+                                    class=tbVP 
+                                    type="number">
+                                </input>
+                            </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td bgcolor="#5882FA">
-                        <div style="overflow: hidden" class=playerWhite>
-                            P6:
-                            <select id=p6 onchange='selChange_cb(this)'>
-                                <!-- populated by js -->
-                            </select>
-                            <span id=p6_stats></span>
+                        <div class=playerSelect>
+                            <div class=playerSelectTitle>P5:</div>
+                            <div class=playerSelectCombo>
+                                <select id=p5 
+                                    class=comboPlayer 
+                                    onchange='selChange_cb(this)'>
+                                </select>
+                            </div>
+                            <div id=p5_stats class=playerSelectStats></div>
+                            <div class=playerSelectScore>
+                                <input id=p5_vp    
+                                    class=tbVP 
+                                    type="number">
+                                </input>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td bgcolor="#5882FA">
+                        <div class=playerSelect>
+                            <div class=playerSelectTitle>P6:</div>
+                            <div class=playerSelectCombo>
+                                <select id=p6
+                                    class=comboPlayer 
+                                    onchange='selChange_cb(this)'>
+                                </select>
+                            </div>
+                            <div id=p6_stats class=playerSelectStats></div>
+                            <div class=playerSelectScore>
+                                <input id=p6_vp    
+                                    class=tbVP 
+                                    type="number">
+                                </input>
+                            </div>
                         </div>
                     </td>
                 </tr>
