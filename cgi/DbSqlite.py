@@ -174,17 +174,26 @@ class DbSqlite():
         self.c.execute('DELETE from games_trash where time=?', (t,));
         self.conn.commit();
 
-    def recordGame(self, data):
-        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                (data['t'], 
-                data['p1'], data['p1_r'],
-                data['p2'], data['p2_r'],
-                data['p3'], data['p3_r'],
-                data['p4'], data['p4_r'],
-                data['p5'], data['p5_r'],
-                data['p6'], data['p6_r'])
-            )
-        self.conn.commit()
+    def recordGame(self, players, scores):
+            
+        # Calculate all valid sub-games
+        for i in range(0,6):
+            for j in range(i,6):
+                if (i != j):
+                    if ((players[i] != 'none') and (players[j] != 'none')):
+                        print '[' + players[i] + ' vs ' + players[j] + ']'
+
+    
+#        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?,?,?,?,?,?,?,?,?)',
+#                (data['t'], 
+#                data['p1'], data['p1_r'],
+#                data['p2'], data['p2_r'],
+#                data['p3'], data['p3_r'],
+#                data['p4'], data['p4_r'],
+#                data['p5'], data['p5_r'],
+#                data['p6'], data['p6_r'])
+#            )
+#        self.conn.commit()
 
     #--------------------------------------------------------------------------
     # setup/testing stuff

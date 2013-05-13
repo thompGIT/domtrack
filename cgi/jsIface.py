@@ -2,7 +2,7 @@
 
 #
 # this is the interface by which the JavaScript interacts with the "back-end"
-# (database, persistent storage) of the rest of bugtrack
+# (database, persistent storage) of the rest of the system
 #
 # the JS makes get/post requests to this CGI, and this prints data (initially
 # in CSV format) which the JS parses and presents to the user (via HTML or
@@ -29,37 +29,28 @@ playerList = db.getPlayerList()
 form = cgi.FieldStorage()
 
 op = 'play'
+
 if 'op' in form:
     op = form['op'].value
 
 if op == 'recordGame':
-    db.recordGame({'a1':form['a1'].value, 'a1_r':int(form['a1_r'].value), 'a1_rd':int(form['a1_rd'].value),
-                   'a2':form['a2'].value, 'a2_r':int(form['a2_r'].value), 'a2_rd':int(form['a2_rd'].value),
-                   'b1':form['b1'].value, 'b1_r':int(form['b1_r'].value), 'b1_rd':int(form['b1_rd'].value),
-                   'b2':form['b2'].value, 'b2_r':int(form['b2_r'].value), 'b2_rd':int(form['a2_rd'].value),
-                   't':form['t'].value
-                });
 
-    db.setPlayerStats(form['a1'].value, [int(form['a1_r_new'].value), int(form['a1_rd_new'].value), int(form['t'].value)])
-    db.setPlayerStats(form['a2'].value, [int(form['a2_r_new'].value), int(form['a2_rd_new'].value), int(form['t'].value)])
-    db.setPlayerStats(form['b1'].value, [int(form['b1_r_new'].value), int(form['b1_rd_new'].value), int(form['t'].value)])
-    db.setPlayerStats(form['b2'].value, [int(form['b2_r_new'].value), int(form['b2_rd_new'].value), int(form['t'].value)])
+#    db.recordGame({'p1':form['p1'].value, 'p2':form['p2'].value, 
+#                   'p3':form['p3'].value, 'p4':form['p4'].value, 
+#                   'p5':form['p5'].value, 'p6':form['p6'].value},
+#                  {'p1_vp':int(form['p1_vp'].value), 'p2_vp':int(form['p2_vp'].value), 
+#                   'p3_vp':int(form['p3_vp'].value), 'p4_vp':int(form['p4_vp'].value), 
+#                   'p5_vp':int(form['p5_vp'].value), 'p6_vp':int(form['p6_vp'].value)}
+#                   );
+    db.recordGame([form['p1'].value, form['p2'].value, 
+                  form['p3'].value, form['p4'].value, 
+                  form['p5'].value, form['p6'].value],
+                  [int(form['p1_vp'].value), int(form['p2_vp'].value), 
+                   int(form['p3_vp'].value), int(form['p4_vp'].value), 
+                   int(form['p5_vp'].value), int(form['p6_vp'].value)]
+                );
 
     print "OK",
-
-if op == 'predict':
-    a1 = form['a1'].value
-    a2 = form['a2'].value
-    b1 = form['b1'].value
-    b2 = form['b2'].value
-
-    ratings = map(lambda x: db.getPlayerRating(x), [a1,a2,b1,b2])
-    rds = map(lambda x: db.getPlayerRD(x), [a1,a2,b1,b2])
-    ts = map(lambda x: db.getPlayerT(x), [a1,a2,b1,b2])
-
-    [winDelta, loseDelta] = glicko.calcRatingWinLossDeltaPlayer(ratings, rds, ts)
-
-    print "%d,%d" % (winDelta, loseDelta)
 
 if op == 'deleteGame':
     db.deleteGame(form['t'].value)
@@ -78,19 +69,19 @@ if op == 'getstats':
         [rating, mu, sigma, t] = db.getPlayerStats(player)
         print "%d,%d,%d,%d" % (rating, mu, sigma, t)
 
-if op == 'getstatsextended':
-    player = form['player'].value
-    estats = db.getPlayerStatsExtended(player)
-    print estats,
+# if op == 'getstatsextended':
+#     player = form['player'].value
+#     estats = db.getPlayerStatsExtended(player)
+#     print estats,
 
-if op == 'getGames':
-    games = db.getGames()
-    for g in games:
-        print "%d,%s,%d,%d,%s,%d,%d,%s,%d,%d,%s,%d,%d" % (
-                            g['t'], 
-                            g['a1'], g['a1_r'], g['a1_rd'],
-                            g['a2'], g['a2_r'], g['a2_rd'],
-                            g['b1'], g['b1_r'], g['b1_rd'],
-                            g['b2'], g['b2_r'], g['b2_rd'] )
+# if op == 'getGames':
+#     games = db.getGames()
+#     for g in games:
+#         print "%d,%s,%d,%d,%s,%d,%d,%s,%d,%d,%s,%d,%d" % (
+#                             g['t'], 
+#                             g['a1'], g['a1_r'], g['a1_rd'],
+#                             g['a2'], g['a2_r'], g['a2_rd'],
+#                             g['b1'], g['b1_r'], g['b1_rd'],
+#                             g['b2'], g['b2_r'], g['b2_rd'] )
 
 

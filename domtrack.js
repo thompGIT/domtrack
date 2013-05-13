@@ -140,8 +140,10 @@ var showElems = []
 /* important play elems */
 var elem_p1,      elem_p2,      elem_p3,      elem_p4,      elem_p5,      elem_p6
 var elem_p1stats, elem_p2stats, elem_p3stats, elem_p4stats, elem_p5stats, elem_p6stats
+var score_p1,     score_p2,     score_p3,     score_p4,     score_p5,     score_p6
 
 var playerElems   = []
+var scoreElems    = []
 var playerStats   = []
 
 var playerNames    = []
@@ -185,6 +187,14 @@ function domtrackInit(x) {
     elem_p5stats = document.getElementById("p5_stats")
     elem_p6stats = document.getElementById("p6_stats")
     
+    score_p1 = document.getElementById("p1_vp")
+    score_p2 = document.getElementById("p2_vp")
+    score_p3 = document.getElementById("p3_vp")
+    score_p4 = document.getElementById("p4_vp")
+    score_p5 = document.getElementById("p5_vp")
+    score_p6 = document.getElementById("p6_vp")
+    scoreElems = [score_p1, score_p2, score_p3, score_p4, score_p5, score_p6]
+        
     /* individual stats mode */
 /*    elem_istatsPlayerChoice = document.getElementById("istatsPlayerChoice")    */
 
@@ -317,75 +327,90 @@ function selChange_cb(elem) {
 }
 
 function disableRecordGame() {
-    document.getElementById("TeamAWins").disabled = 1
-    document.getElementById("TeamBWins").disabled = 1
+    document.getElementById("Record").disabled = 1
 }
 
 function enableRecordGame() {
-    document.getElementById("TeamAWins").disabled = 0
-    document.getElementById("TeamBWins").disabled = 0
+    document.getElementById("Record").disabled = 0
 }
 
 function recordGame(elem) {
+
     disableRecordGame()
 
     /* milliseconds before next game records */
     var disabledDelay = 5*1000
 
-    var a1a2b1b2 = []
-    var ratings = []
-    var rds = []
-    var ts = []
-    var rps = []
+    var p = ''
+    var s = 0
+    var players = []
+    var scores  = []
 
     for(var i in playerElems) {
-        a1a2b1b2.push(playerElems[i].value)
-        ratings.push(playerToR[playerElems[i].value])
-        rds.push(playerToRD[playerElems[i].value])
-        ts.push(playerToT[playerElems[i].value])
+        if (playerElems[i].value == '') { 
+            p = 'none' 
+        } else {
+            p = playerElems[i].value
+        }
+        if (scoreElems[i].value == '') {
+            s = -200
+        } else {
+            s = scoreElems[i].value
+        }        
+        players.push(p)
+        scores.push(s)
     }
-
+        
+/*
     if(elem.id == "TeamAWins") {
-        /* then arrays are in correct order */
     }
     else {
-        /* position winner in locations [0], [1] */
+        /* position winner in locations [0], [1] * /
         a1a2b1b2 = [a1a2b1b2[3], a1a2b1b2[2], a1a2b1b2[1], a1a2b1b2[0]]
         ratings = [ratings[3], ratings[2], ratings[1], ratings[0]]
         rds = [rds[3], rds[2], rds[1], rds[0]]
         ts = [ts[3], ts[2], ts[1], ts[0]]
     }
    
-    /* warn against dupliate game records */
+    /* warn against dupliate game records * /
     if(a1a2b1b2[0] == lastRecordA1 && a1a2b1b2[1] == lastRecordA2 &&
         a1a2b1b2[2] == lastRecordB1 && a1a2b1b2[3] == lastRecordB2) {
         if(confirm('Possible duplicate game; detected same players as last game! Continue anyways?') == false) {
             return
         }
     }
+    
     lastRecordA1 = a1a2b1b2[0]
     lastRecordA2 = a1a2b1b2[1]
     lastRecordB1 = a1a2b1b2[2]
     lastRecordB2 = a1a2b1b2[3]
-
-    /* convert those last-time-played timestamps to rating periods */
+*/
+/*
+    /* convert those last-time-played timestamps to rating periods * /
     var tNow = Math.round((new Date()).getTime() / 1000)
 
     for(var i in ts) {
         rps.push(secToRatingPeriods(tNow - ts[i]))
     }
-
+*/
     /* build the ajax request */
     var req = 'cgi/jsIface.py?op=recordGame'
+    
+    req += '&p1=' + players[0] + "&p1_vp=" + scores[0]
+    req += '&p2=' + players[1] + "&p2_vp=" + scores[1]
+    req += '&p3=' + players[2] + "&p3_vp=" + scores[2]
+    req += '&p4=' + players[3] + "&p4_vp=" + scores[3]
+    req += '&p5=' + players[4] + "&p5_vp=" + scores[4]
+    req += '&p6=' + players[5] + "&p6_vp=" + scores[5]
 
-    /* game stats: players, OLD r's, OLD rd's */
+    /* game stats: players, OLD r's, OLD rd's * /
     req += '&t=' + tNow
     req += '&a1=' + a1a2b1b2[0] + "&a1_r=" + playerToR[a1a2b1b2[0]] + "&a1_rd=" + playerToRD[a1a2b1b2[0]]
     req += '&a2=' + a1a2b1b2[1] + "&a2_r=" + playerToR[a1a2b1b2[1]] + "&a2_rd=" + playerToRD[a1a2b1b2[1]]
     req += '&b1=' + a1a2b1b2[2] + "&b1_r=" + playerToR[a1a2b1b2[2]] + "&b1_rd=" + playerToRD[a1a2b1b2[2]]
     req += '&b2=' + a1a2b1b2[3] + "&b2_r=" + playerToR[a1a2b1b2[3]] + "&b2_rd=" + playerToRD[a1a2b1b2[3]]
     
-    /* new scores, ratings */
+    /* new scores, ratings * /
     var results = calcGameScores(ratings, rds, rps)
 
     req += "&a1_r_new=" + results[0][0] + "&a1_rd_new=" + results[0][1]
@@ -396,7 +421,7 @@ function recordGame(elem) {
     /* do it! */
     ajax(req)
 
-    /* message */
+    /* message * /
     var alertMsg = 'Win for '
     if(elem.id == "TeamAWins") {
         alertMsg += elem_a1.value + " and " + elem_a2.value
@@ -408,7 +433,7 @@ function recordGame(elem) {
     alertMsg += " recorded!" 
     alert(alertMsg)
 
-    /* now also update the global vars */
+    /* now also update the global vars * /
     for(var i in a1a2b1b2) {
         playerToR[a1a2b1b2[i]] = results[i][0]
         playerToRD[a1a2b1b2[i]] = results[i][1]
@@ -417,10 +442,6 @@ function recordGame(elem) {
 
     /* refresh */
     playShowRatings()
-    playShowPredictions()
-
-    /* if scheduling was enabled, cycle these guys to back of line */
-    schedCycle()
 
     /* some seconds from now, re-enable */
     setTimeout("enableRecordGame();", disabledDelay)
