@@ -28,11 +28,7 @@ class DbSqlite():
             ['P5',      'TEXT'],     # Player 5
             ['P5Rating','REAL'],     # Player 5 Rating
             ['P6',      'TEXT'],     # Player 6
-            ['P6Rating','REAL'],     # Player 6 Rating
-            ['P7',      'TEXT'],     # Player 7
-            ['P7Rating','REAL'],     # Player 7 Rating
-            ['P8',      'TEXT'],     # Player 8
-            ['P8Rating','REAL']]     # Player 8 Rating
+            ['P6Rating','REAL']]     # Player 6 Rating
     SCHEMA_PLAYERS = [
             ['name',  'TEXT PRIMARY KEY'],  # Player Name
             ['rating','REAL'],              # Rating
@@ -134,16 +130,6 @@ class DbSqlite():
     #--------------------------------------------------------------------------
     # game stats
     #--------------------------------------------------------------------------
-
-    # returns a row from the database - currently we define row as:
-    # [date, teamAwhitePlayer, teamAwhitePlayerRating,
-    #        teamAblackPlayer, teamAblackPlayerRating,
-    #        teamBwhitePlayer, teamBwhitePlayerRating,
-    #        teamBblackPlayer, teamBblackPlayerRating]
-    #
-    # where, by convention, teamA are the winners, teamB are the losers
-    #
-    # (change this comment if the db schema changes please)
     def getGames(self, since=0):
         self.c.execute('SELECT * from games WHERE time>(?) order by time', (since,))
 
@@ -155,15 +141,13 @@ class DbSqlite():
                           'p3':str(x[5]),  'p3_r':x[6],  \
                           'p4':str(x[7]),  'p4_r':x[8],  \
                           'p5':str(x[9]),  'p5_r':x[10], \
-                          'p6':str(x[11]), 'p6_r':x[12], \
-                          'p7':str(x[13]), 'p7_r':x[14], \
-                          'p8':str(x[15]), 'p8_r':x[16]})
+                          'p6':str(x[11]), 'p6_r':x[12]})
         return games
 
     # retrieve all games that had player involved in it
     def getGamesByPlayer(self, name, since=0):
         self.c.execute('SELECT * from games WHERE' +
-            ' p1=? or p2=? or p3=? or p4=? or p5=? or p6=? or p7=? or p8=?' +
+            ' p1=? or p2=? or p3=? or p4=? or p5=? or p6=?' +
             ' and time>(?)' +
             ' ORDER by time',
             (name, name, name, name, name, name, name, name, since)
@@ -177,9 +161,7 @@ class DbSqlite():
                           'p3':str(x[5]),  'p3_r':x[6],  \
                           'p4':str(x[7]),  'p4_r':x[8],  \
                           'p5':str(x[9]),  'p5_r':x[10], \
-                          'p6':str(x[11]), 'p6_r':x[12], \
-                          'p7':str(x[13]), 'p7_r':x[14], \
-                          'p8':str(x[15]), 'p8_r':x[16]})
+                          'p6':str(x[11]), 'p6_r':x[12]})
         return games
 
     def deleteGame(self, t):
@@ -200,9 +182,7 @@ class DbSqlite():
                 data['p3'], data['p3_r'],
                 data['p4'], data['p4_r'],
                 data['p5'], data['p5_r'],
-                data['p6'], data['p6_r'],
-                data['p7'], data['p7_r'],
-                data['p8'], data['p8_r'])
+                data['p6'], data['p6_r'])
             )
         self.conn.commit()
 
