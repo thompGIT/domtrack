@@ -138,17 +138,17 @@ function dateToStringMini(d) {
 var showElems = []
 
 /* important play elems */
-var elem_a1, elem_a2, elem_b1, elem_b2
-var elem_a1stats, elem_a2stats, elem_b1stats, elem_b2stats
-var elem_a1predict, elem_a2predict, elem_b1predict, elem_b2predict
-var lastRecordA1, lastRecordA2, lastRecordB1, lastRecordB2
-var elem_autopick
+var elem_p1,      elem_p2,      elem_p3,      elem_p4,      elem_p5,      elem_p6
+var elem_p1stats, elem_p2stats, elem_p3stats, elem_p4stats, elem_p5stats, elem_p6stats
 
-var playerElems = []
-var playerNames = []
-var playerToR = []
-var playerToRD = []
-var playerToT = []
+var playerElems   = []
+var playerStats   = []
+
+var playerNames    = []
+var playerToRating = []
+var playerToMu     = []
+var playerToSigma  = []
+var playerToT      = []
 
 /* istats */
 var elem_istatsPlayerChoice
@@ -195,14 +195,12 @@ function domtrackInit(x) {
         var m = lines[j].match(/^(.*),(.*),(.*),(.*),(.*)$/)
 
         if(m) {
-            playerName = m[1]
+            playerName                 = m[1]                        
             playerNames.push(playerName)
-            /*
-            playerToR[playerName]  = parseInt(m[2])
-            playerToRD[playerName] = parseInt(m[3])
-            playerToT[playerName]  = parseInt(m[4])
-            playerToT[playerName]  = parseInt(m[5])
-            */
+            playerToRating[playerName] = parseFloat(m[2])
+            playerToMu[playerName]     = parseFloat(m[3])
+            playerToSigma[playerName]  = parseFloat(m[4])
+            playerToT[playerName]      = parseFloat(m[5])            
         }
     }
 
@@ -219,9 +217,6 @@ function domtrackInit(x) {
 
     /* populate the ratings */
     playShowRatings()
-
-    /* populate the predictions */
-    playShowPredictions()
 }
 
 function hideAllBut(e) {
@@ -273,25 +268,23 @@ function showAdmin() {
 /******************************************************************************
  * PLAY MODE stuff
  *****************************************************************************/
-function playClearPredicts(x) {
-    elem_a1predict.innerHTML = ""
-    elem_a2predict.innerHTML = ""
-    elem_b1predict.innerHTML = ""
-    elem_b2predict.innerHTML = ""
-}
-
 function playShowRatings() {
-    /* update statistics (rating.rd) */
-    var enameToElemStats = []
-    enameToElemStats["a1"] = elem_a1stats
-    enameToElemStats["a2"] = elem_a2stats
-    enameToElemStats["b1"] = elem_b1stats
-    enameToElemStats["b2"] = elem_b2stats
+
+    /* update statistics */
+    var enameToElemStats   = []
+    enameToElemStats["p1"] = elem_p1stats
+    enameToElemStats["p2"] = elem_p2stats
+    enameToElemStats["p3"] = elem_p3stats
+    enameToElemStats["p4"] = elem_p4stats
+    enameToElemStats["p5"] = elem_p5stats
+    enameToElemStats["p6"] = elem_p6stats
 
     for(var i in playerElems) {
-        if(playerElems[i].value) {
+        if(playerElems[i].value) {           
             enameToElemStats[playerElems[i].id].innerHTML = 
-                playerToR[playerElems[i].value] + "." + playerToRD[playerElems[i].value]
+                playerToRating[playerElems[i].value] + " (" + 
+                playerToMu[playerElems[i].value]     + "/"  + 
+                playerToSigma[playerElems[i].value]  + ")"
         }
 
         else {
@@ -301,63 +294,13 @@ function playShowRatings() {
     }
 }
 
-function playShowPredictions() {
-    // if all 4 players are selected, make game prediction
-    if(elem_a1.value && elem_a2.value && elem_b1.value && elem_b2.value) {
-        var ratings = []
-        var rds = []
-        var ts = []
-
-        for(var i in playerElems) {
-            ratings.push(playerToR[playerElems[i].value])
-            rds.push(playerToRD[playerElems[i].value])
-            ts.push(playerToT[playerElems[i].value])
-        }
-
-        var deltas = []
-
-        /* if a1 wins */
-        delta = calcRatingWinLossDeltaPlayer(ratings, rds, ts)
-        elem_a1predict.innerHTML = "<font color=green>+" + delta[0] + "</font> " + 
-                                    "<font color=red>" + delta[1] + "</font>"
-        /* if a2 wins */
-        ratings = [ratings[1], ratings[0], ratings[2], ratings[3]]
-        rds = [rds[1], rds[0], rds[2], rds[3]]
-        ts = [ts[1], ts[0], ts[2], ts[3]]
-        delta = calcRatingWinLossDeltaPlayer(ratings, rds, ts)
-        elem_a2predict.innerHTML = "<font color=green>+" + delta[0] + "</font> " + 
-                                    "<font color=red>" + delta[1] + "</font>"
-
-        /* if b1 wins */
-        ratings = [ratings[2], ratings[3], ratings[1], ratings[0]]
-        rds = [rds[2], rds[3], rds[1], rds[0]]
-        ts = [ts[2], ts[3], ts[1], ts[0]]
-        delta = calcRatingWinLossDeltaPlayer(ratings, rds, ts)
-        elem_b1predict.innerHTML = "<font color=green>+" + delta[0] + "</font> " + 
-                                    "<font color=red>" + delta[1] + "</font>"
-
-        /* if b2 wins */
-        ratings = [ratings[1], ratings[0], ratings[2], ratings[3]]
-        rds = [rds[1], rds[0], rds[2], rds[3]]
-        ts = [ts[1], ts[0], ts[2], ts[3]]
-        delta = calcRatingWinLossDeltaPlayer(ratings, rds, ts)
-        elem_b2predict.innerHTML = "<font color=green>+" + delta[0] + "</font> " + 
-                                    "<font color=red>" + delta[1] + "</font>"
-    }
-    // otherwise clear the predictions
-    else {
-        playClearPredicts(); 
-    }
-
-}
-
 function selChange_cb(elem) {
-    /* force other drop downs away from the name we just selected */
-    var elems = [elem_a1, elem_a2, elem_b1, elem_b2]
-    var elems_stats = [elem_a1stats, elem_a2stats, elem_b1stats, elem_b2stats]
-    var elems_predict = [elem_a1predict, elem_a2predict, elem_b1predict, elem_b2predict]
 
-    for(var i=0; i<4; ++i) {
+    /* force other drop downs away from the name we just selected */
+    var elems       = [elem_p1, elem_p2, elem_p3, elem_p4, elem_p5, elem_p6]
+    var elems_stats = [elem_p1stats, elem_p2stats, elem_p3stats, elem_p4stats, elem_p5stats, elem_p6stats]
+
+    for(var i=0; i<6; ++i) {
         if(elem != elems[i] && elem.value == elems[i].value) {
 	        /* this works in chrome, firefox */
             elems[i].value = ""
@@ -366,15 +309,11 @@ function selChange_cb(elem) {
 
             /* clear also the stats */
             elems_stats[i].innerHTML = ""
-            elems_predict[i].innerHTML = ""
         }
     }
 
     /* populate ratings */
     playShowRatings()
-
-    /* possibly (if 4 players) show game predictions */
-    playShowPredictions()
 }
 
 function disableRecordGame() {
@@ -485,221 +424,6 @@ function recordGame(elem) {
 
     /* some seconds from now, re-enable */
     setTimeout("enableRecordGame();", disabledDelay)
-}
-
-function swapElemVals(a, b)
-{
-    var t = a.value
-    a.value = b.value
-    b.value = t
-}
-
-function swapElemHTML(a, b)
-{
-    var t = a.innerHTML
-    a.innerHTML = b.innerHTML
-    b.innerHTML = t
-}
-
-function swapTeamA(elem)
-{
-    swapElemVals(elem_a1, elem_a2)
-    swapElemHTML(elem_a1stats, elem_a2stats)
-    swapElemHTML(elem_a1predict, elem_a2predict)
-}
-
-function clearTeamA(elem)
-{
-    elem_a1.value = ''
-    elem_a1stats.innerHTML = ''
-    elem_a1predict.innerHTML = ''
-    elem_a2.value = ''
-    elem_a2stats.innerHTML = ''
-    elem_a2predict.innerHTML = ''
-}
-
-function swapTeamB(elem)
-{
-    swapElemVals(elem_b1, elem_b2)
-    swapElemHTML(elem_b1stats, elem_b2stats)
-    swapElemHTML(elem_b1predict, elem_b2predict)
-}
-
-function clearTeamB(elem)
-{
-    elem_b1.value = ''
-    elem_b1stats.innerHTML = ''
-    elem_b1predict.innerHTML = ''
-    elem_b2.value = ''
-    elem_b2stats.innerHTML = ''
-    elem_b2predict.innerHTML = ''
-}
-
-/******************************************************************************
- * SCHEDULER STUFF
- *****************************************************************************/
-
-function schedCycle()
-{
-    var names = schedGetHead()
-
-    for(var i in names) {
-        schedRemovePlayer(names[i])
-        schedAddPlayer(names[i])
-    }
-}
-
-function schedNameToDisplayElem(who)
-{
-    var re = new RegExp('.*' + who + '.*')
-    var disp = undefined
-
-    /* resolve display element for this guy */
-    for(var i in schedDisplayElems) {
-        var m = schedDisplayElems[i].innerHTML.match(re)
-        if(m) {
-            disp = schedDisplayElems[i]
-            break
-        }
-    }
-
-    if(disp == undefined) {
-        alert("couldn't located player " + who + " in scheduler slots")
-    }
-
-    return disp
-}
-
-function schedRemovePlayer(who)
-{
-    var disp = schedNameToDisplayElem(who)
-
-    /* get rank */
-    m = disp.innerHTML.match(/(\d+)/)
-    var rank = parseInt(m[1])
-
-    /* remove this guy's number */ 
-    var m = disp.innerHTML.match(/<\/font>(.*)/)
-    disp.innerHTML = m[1]
-
-    /* advance everyone behind him */
-    for(var i in schedDisplayElems) {
-        var m = schedDisplayElems[i].innerHTML.match(/(.*?)(\d+). (.*)/)
-
-        if(m) {
-            if (parseInt(m[2]) > rank) {
-                schedDisplayElems[i].innerHTML = m[1] + (parseInt(m[2])-1) + '. ' + m[3]
-            }
-        }
-    }
-}
-
-function schedAddPlayer(who)
-{
-    var disp = schedNameToDisplayElem(who)
-
-    var max = 0
-
-    /* find end of the queue */
-    for(var i in schedDisplayElems) {
-        var m = schedDisplayElems[i].innerHTML.match(/(.*?)(\d+)(.*)/)
-
-        if(m) {
-            max = Math.max(max, m[2])
-        }
-    }
-
-    disp.innerHTML = '<font size=large color=red>' + (max+1) + 
-        '. </font>' + disp.innerHTML
-}
-
-function schedTogglePlayer(elem, who)
-{
-    if(elem.checked == true) {
-        schedAddPlayer(who)   
-    }
-    else {
-        schedRemovePlayer(who)
-    }
-}
-
-function schedGetHead() {
-    var names = []
-
-    /* find the current 4 */
-    for(var i in schedDisplayElems) {
-        var m = schedDisplayElems[i].innerHTML.match(/^.*?(\d+).(.*)/)
-        if(m) {
-            val = parseInt(m[1])
-            if(val == 1 || val == 2 || val == 3 || val == 4) {
-                m = schedDisplayElems[i].innerHTML.match(/<\/font>(.*)/)
-                names.push(m[1])
-            }
-        }
-    }
-
-    if(names.length != 4) {
-        alert("ERROR: less than 4 people scheduled!")
-        return
-    }
-   
-    return names;
-}
-
-function schedLoadPlayers(names)
-{
-    /* load them into the player slots 
-        by convention: left board is 0,1 and right board is 2,3 */
-    elem_a1.value = names[0]
-    elem_a2.value = names[1]
-    elem_b1.value = names[2]
-    elem_b2.value = names[3]
-
-    /* refresh stats */
-    selChange_cb(elem_a1)
-    selChange_cb(elem_a2)
-    selChange_cb(elem_b1)
-    selChange_cb(elem_b2)
-
-    /* show the play screen */
-    showPlay()
-}
-    
-function schedLoadPlayersRandom()
-{
-    var names = schedGetHead()
-
-    if(names) {
-        /* scramble the names */
-        for(var i=0; i<8; ++i) {
-            j = Math.floor((Math.random()*4))
-            k = Math.floor((Math.random()*4))
-
-            var temp = names[j] 
-            names[j] = names[k]
-            names[k] = temp
-        }
- 
-        schedLoadPlayers(names);
-    }
-}
-
-function schedLoadPlayersFair()
-{
-    var names = schedGetHead()
-
-    /* sort names, best to worst */
-    names.sort(function(a,b) { return playerToR[b]-playerToR[a] })
-
-    /* 0,3 vs. 1,2 */
-    names = [names[0], names[3], names[1], names[2]]
-
-    /* randomly flip black/white */
-    if(Math.floor(Math.random()*2)) {
-        names = [names[1], names[0], names[3], names[2]]
-    }
-
-    schedLoadPlayers(names);
 }
 
 /******************************************************************************
