@@ -198,21 +198,10 @@ function domtrackInit(x) {
     /* individual stats mode */
 /*    elem_istatsPlayerChoice = document.getElementById("istatsPlayerChoice")    */
 
+    
     /* init global player vars */
-    var resp = ajax('cgi/jsIface.py?op=getplayers')
-    var lines = resp.split("\n")
-    for(var j in lines) {
-        var m = lines[j].match(/^(.*),(.*),(.*),(.*),(.*)$/)
+    refreshPlayerDataStore()
 
-        if(m) {
-            playerName                 = m[1]                        
-            playerNames.push(playerName)
-            playerToRating[playerName] = parseFloat(m[2])
-            playerToMu[playerName]     = parseFloat(m[3])
-            playerToSigma[playerName]  = parseFloat(m[4])
-            playerToT[playerName]      = parseFloat(m[5])            
-        }
-    }
 
     /* populate player choice drop-downs */
     playerNames.sort()
@@ -227,6 +216,23 @@ function domtrackInit(x) {
 
     /* populate the ratings */
     playShowRatings()
+}
+
+function refreshPlayerDataStore() {
+    var resp = ajax('cgi/jsIface.py?op=getplayers')
+    var lines = resp.split("\n")
+    for(var j in lines) {
+        var m = lines[j].match(/^(.*),(.*),(.*),(.*),(.*)$/)
+
+        if(m) {
+            playerName                 = m[1]                        
+            playerNames.push(playerName)
+            playerToRating[playerName] = parseFloat(m[2])
+            playerToMu[playerName]     = parseFloat(m[3])
+            playerToSigma[playerName]  = parseFloat(m[4])
+            playerToT[playerName]      = parseFloat(m[5])            
+        }
+    }
 }
 
 function hideAllBut(e) {
@@ -403,21 +409,6 @@ function recordGame(elem) {
     req += '&p5=' + players[4] + "&p5_vp=" + scores[4]
     req += '&p6=' + players[5] + "&p6_vp=" + scores[5]
 
-    /* game stats: players, OLD r's, OLD rd's * /
-    req += '&t=' + tNow
-    req += '&a1=' + a1a2b1b2[0] + "&a1_r=" + playerToR[a1a2b1b2[0]] + "&a1_rd=" + playerToRD[a1a2b1b2[0]]
-    req += '&a2=' + a1a2b1b2[1] + "&a2_r=" + playerToR[a1a2b1b2[1]] + "&a2_rd=" + playerToRD[a1a2b1b2[1]]
-    req += '&b1=' + a1a2b1b2[2] + "&b1_r=" + playerToR[a1a2b1b2[2]] + "&b1_rd=" + playerToRD[a1a2b1b2[2]]
-    req += '&b2=' + a1a2b1b2[3] + "&b2_r=" + playerToR[a1a2b1b2[3]] + "&b2_rd=" + playerToRD[a1a2b1b2[3]]
-    
-    /* new scores, ratings * /
-    var results = calcGameScores(ratings, rds, rps)
-
-    req += "&a1_r_new=" + results[0][0] + "&a1_rd_new=" + results[0][1]
-    req += "&a2_r_new=" + results[1][0] + "&a2_rd_new=" + results[1][1]
-    req += "&b1_r_new=" + results[2][0] + "&b1_rd_new=" + results[2][1]
-    req += "&b2_r_new=" + results[3][0] + "&b2_rd_new=" + results[3][1]
-
     /* do it! */
     ajax(req)
 
@@ -433,14 +424,8 @@ function recordGame(elem) {
     alertMsg += " recorded!" 
     alert(alertMsg)
 
-    /* now also update the global vars * /
-    for(var i in a1a2b1b2) {
-        playerToR[a1a2b1b2[i]] = results[i][0]
-        playerToRD[a1a2b1b2[i]] = results[i][1]
-        playerToT[a1a2b1b2[i]] = tNow
-    } 
-
     /* refresh */
+    refreshPlayerDataStore()
     playShowRatings()
 
     /* some seconds from now, re-enable */
