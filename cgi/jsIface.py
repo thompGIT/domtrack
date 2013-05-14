@@ -34,14 +34,6 @@ if 'op' in form:
     op = form['op'].value
 
 if op == 'recordGame':
-
-#    db.recordGame({'p1':form['p1'].value, 'p2':form['p2'].value, 
-#                   'p3':form['p3'].value, 'p4':form['p4'].value, 
-#                   'p5':form['p5'].value, 'p6':form['p6'].value},
-#                  {'p1_vp':int(form['p1_vp'].value), 'p2_vp':int(form['p2_vp'].value), 
-#                   'p3_vp':int(form['p3_vp'].value), 'p4_vp':int(form['p4_vp'].value), 
-#                   'p5_vp':int(form['p5_vp'].value), 'p6_vp':int(form['p6_vp'].value)}
-#                   );
     db.recordGame([form['p1'].value, form['p2'].value, 
                   form['p3'].value, form['p4'].value, 
                   form['p5'].value, form['p6'].value],
