@@ -7,6 +7,8 @@ import sqlite3
 import string
 import time
 import os
+import trueskill
+from trueskill import Rating
 
 dbFile = 'domtrack.db'
 
@@ -122,8 +124,8 @@ class DbSqlite():
         self.conn.commit()
 
     def setPlayerStats(self, name, listStats):
-        self.c.execute('UPDATE players SET rating=?, rd=? ,time=? WHERE name=?',
-                (listStats[0], listStats[1], listStats[2], name)
+        self.c.execute('UPDATE players SET rating=?, mu=?, sigma=? ,time=? WHERE name=?',
+                (listStats[0], listStats[1], listStats[2], listStats[3], name)
             )
         self.conn.commit()
 
@@ -182,8 +184,20 @@ class DbSqlite():
                 if (i != j):
                     if ((players[i] != 'none') and (players[j] != 'none')):
                         print '[' + players[i] + ' vs ' + players[j] + ']'
-
-    
+                        p1Stats = self.getPlayerStats(players[i])
+                        p2Stats = self.getPlayerStats(players[j])
+                        p1R = Rating(p1Stats[1],p1Stats[2])
+                        p2R = Rating(p2Stats[1],p2Stats[2])
+                        print players[i] + ' (' + str(p1R.mu) + ',' + str(p1R.sigma) + ')' + ' vs. ' + \
+                              players[j] + ' (' + str(p2R.mu) + ',' + str(p2R.sigma) + ')'
+                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
+                        print players[i] + ' (' + str(new_p1R.mu) + ',' + str(new_p1R.sigma) + ')' + ' vs. ' + \
+                              players[j] + ' (' + str(new_p2R.mu) + ',' + str(new_p2R.sigma) + ')'
+                        p1TS = new_p1R.mu - (3 * new_p1R.sigma)
+                        p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
+                        self.setPlayerStats(players[i], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
+                        self.setPlayerStats(players[j], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
+                            
 #        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?,?,?,?,?,?,?,?,?)',
 #                (data['t'], 
 #                data['p1'], data['p1_r'],
