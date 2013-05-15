@@ -37,9 +37,9 @@ if op == 'recordGame':
     db.recordGame([form['p1'].value, form['p2'].value, 
                   form['p3'].value, form['p4'].value, 
                   form['p5'].value, form['p6'].value],
-                  [int(form['p1_vp'].value), int(form['p2_vp'].value), 
-                   int(form['p3_vp'].value), int(form['p4_vp'].value), 
-                   int(form['p5_vp'].value), int(form['p6_vp'].value)]
+                  [float(form['p1_vp'].value), float(form['p2_vp'].value), 
+                   float(form['p3_vp'].value), float(form['p4_vp'].value), 
+                   float(form['p5_vp'].value), float(form['p6_vp'].value)]
                 );
 
     print "OK",
@@ -52,14 +52,14 @@ if op == 'getplayers':
     pl = db.getPlayerList()
     for p in pl:
         [rating, mu, sigma, t] = db.getPlayerStats(p)
-        print "%s,%d,%d,%d,%d" % (p, rating, mu, sigma, t)
+        print "%s,%.2f,%.2f,%.2f,%d" % (p, rating, mu, sigma, t)
 
 if op == 'getstats':
     player = form['player'].value
     pl = db.getPlayerList()
     if player in pl:
         [rating, mu, sigma, t] = db.getPlayerStats(player)
-        print "%d,%d,%d,%d" % (rating, mu, sigma, t)
+        print "%.2f,%.2f,%.2f,%d" % (rating, mu, sigma, t)
 
 # if op == 'getstatsextended':
 #     player = form['player'].value

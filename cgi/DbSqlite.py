@@ -21,16 +21,22 @@ class DbSqlite():
             ['time',    'REAL PRIMARY KEY'],  # Timestamp in epoch seconds
             ['P1',      'TEXT'],     # Player 1
             ['P1Rating','REAL'],     # Player 1 Rating
+            ['P1Score', 'REAL'],     # Player 1 Score
             ['P2',      'TEXT'],     # Player 2
             ['P2Rating','REAL'],     # Player 2 Rating
+            ['P2Score', 'REAL'],     # Player 2 Score
             ['P3',      'TEXT'],     # Player 3
             ['P3Rating','REAL'],     # Player 3 Rating
+            ['P3Score', 'REAL'],     # Player 3 Score
             ['P4',      'TEXT'],     # Player 4
             ['P4Rating','REAL'],     # Player 4 Rating
+            ['P4Score', 'REAL'],     # Player 4 Score
             ['P5',      'TEXT'],     # Player 5
             ['P5Rating','REAL'],     # Player 5 Rating
+            ['P5Score', 'REAL'],     # Player 5 Score
             ['P6',      'TEXT'],     # Player 6
-            ['P6Rating','REAL']]     # Player 6 Rating
+            ['P6Rating','REAL'],     # Player 6 Rating
+            ['P6Score', 'REAL']]     # Player 6 Score
     SCHEMA_PLAYERS = [
             ['name',  'TEXT PRIMARY KEY'],  # Player Name
             ['rating','REAL'],              # Rating
@@ -177,26 +183,29 @@ class DbSqlite():
         self.conn.commit();
 
     def recordGame(self, players, scores):
-            
+    
+        # Remove all non-players, and sort based on score (hi to low)
+        results_raw = zip(scores,players)
+        results = filter(lambda a: a[1] != 'none', results_raw)
+        results.sort(reverse=True)
+        
         # Calculate all valid sub-games
-        for i in range(0,6):
-            for j in range(i,6):
+        for i in range(0,len(results)):
+            for j in range(i,len(results)):
                 if (i != j):
-                    if ((players[i] != 'none') and (players[j] != 'none')):
-                        print '[' + players[i] + ' vs ' + players[j] + ']'
-                        p1Stats = self.getPlayerStats(players[i])
-                        p2Stats = self.getPlayerStats(players[j])
-                        p1R = Rating(p1Stats[1],p1Stats[2])
-                        p2R = Rating(p2Stats[1],p2Stats[2])
-                        print players[i] + ' (' + str(p1R.mu) + ',' + str(p1R.sigma) + ')' + ' vs. ' + \
-                              players[j] + ' (' + str(p2R.mu) + ',' + str(p2R.sigma) + ')'
-                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
-                        print players[i] + ' (' + str(new_p1R.mu) + ',' + str(new_p1R.sigma) + ')' + ' vs. ' + \
-                              players[j] + ' (' + str(new_p2R.mu) + ',' + str(new_p2R.sigma) + ')'
-                        p1TS = new_p1R.mu - (3 * new_p1R.sigma)
-                        p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
-                        self.setPlayerStats(players[i], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
-                        self.setPlayerStats(players[j], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
+                    p1Stats = self.getPlayerStats(results[i][1])
+                    p2Stats = self.getPlayerStats(results[j][1])
+                    p1R = Rating(p1Stats[1],p1Stats[2])
+                    p2R = Rating(p2Stats[1],p2Stats[2])
+                    print results[i][1] + ' (' + str(p1R.mu) + ',' + str(p1R.sigma) + ')' + ' vs. ' + \
+                          results[j][1] + ' (' + str(p2R.mu) + ',' + str(p2R.sigma) + ')'
+                    new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
+                    print results[i][1] + ' (' + str(new_p1R.mu) + ',' + str(new_p1R.sigma) + ')' + ' vs. ' + \
+                          results[j][1] + ' (' + str(new_p2R.mu) + ',' + str(new_p2R.sigma) + ')'
+                    p1TS = new_p1R.mu - (3 * new_p1R.sigma)
+                    p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
+                    self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
+                    self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
                             
 #        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?,?,?,?,?,?,?,?,?)',
 #                (data['t'], 

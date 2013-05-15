@@ -352,6 +352,7 @@ function recordGame(elem) {
     var players = []
     var scores  = []
 
+    /* Load all the player names and scores */
     for(var i in playerElems) {
         if (playerElems[i].value == '') { 
             p = 'none' 
@@ -366,18 +367,7 @@ function recordGame(elem) {
         players.push(p)
         scores.push(s)
     }
-        
-/*
-    if(elem.id == "TeamAWins") {
-    }
-    else {
-        /* position winner in locations [0], [1] * /
-        a1a2b1b2 = [a1a2b1b2[3], a1a2b1b2[2], a1a2b1b2[1], a1a2b1b2[0]]
-        ratings = [ratings[3], ratings[2], ratings[1], ratings[0]]
-        rds = [rds[3], rds[2], rds[1], rds[0]]
-        ts = [ts[3], ts[2], ts[1], ts[0]]
-    }
-   
+       
     /* warn against dupliate game records * /
     if(a1a2b1b2[0] == lastRecordA1 && a1a2b1b2[1] == lastRecordA2 &&
         a1a2b1b2[2] == lastRecordB1 && a1a2b1b2[3] == lastRecordB2) {
@@ -390,15 +380,7 @@ function recordGame(elem) {
     lastRecordA2 = a1a2b1b2[1]
     lastRecordB1 = a1a2b1b2[2]
     lastRecordB2 = a1a2b1b2[3]
-*/
-/*
-    /* convert those last-time-played timestamps to rating periods * /
-    var tNow = Math.round((new Date()).getTime() / 1000)
 
-    for(var i in ts) {
-        rps.push(secToRatingPeriods(tNow - ts[i]))
-    }
-*/
     /* build the ajax request */
     var req = 'cgi/jsIface.py?op=recordGame'
     
