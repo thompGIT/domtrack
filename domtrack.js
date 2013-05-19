@@ -414,6 +414,19 @@ function recordGame(elem) {
     setTimeout("enableRecordGame();", disabledDelay)
 }
 
+/* Clear all active players and scores. */
+function clearPlayers(elem)
+{    
+    for(var e in playerElems) {
+        playerElems[e].value = ''
+    }     
+    for(var s in scoreElems) {
+        scoreElems[s].value = ''
+    }   
+    
+    playShowRatings()
+}
+
 /******************************************************************************
  * OVERALL STATS MODE stuff
  *****************************************************************************/
