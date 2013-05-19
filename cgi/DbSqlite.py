@@ -88,7 +88,10 @@ class DbSqlite():
     # get the player's rating
     def getPlayerRating(self, name):
         self.c.execute('SELECT rating from players WHERE name=?', (name,))
-        return self.c.fetchone()[0]
+        try:
+            return self.c.fetchone()[0]
+        except:
+            return -200
 
     # get the player's mu
     def getPlayerMu(self, name):
@@ -144,12 +147,13 @@ class DbSqlite():
         games = []
         for x in self.c.fetchall():
             games.append({'t':x[0], \
-                          'p1':str(x[1]),  'p1_r':x[2],  \
-                          'p2':str(x[3]),  'p2_r':x[4],  \
-                          'p3':str(x[5]),  'p3_r':x[6],  \
-                          'p4':str(x[7]),  'p4_r':x[8],  \
-                          'p5':str(x[9]),  'p5_r':x[10], \
-                          'p6':str(x[11]), 'p6_r':x[12]})
+                          'p1':str(x[1]),  'p1_s':x[2],  'p1_r':x[3],  \
+                          'p2':str(x[4]),  'p2_s':x[5],  'p2_r':x[6],  \
+                          'p3':str(x[7]),  'p3_s':x[8],  'p3_r':x[9],  \
+                          'p4':str(x[10]), 'p4_s':x[11], 'p4_r':x[12],  \
+                          'p5':str(x[13]), 'p5_s':x[14], 'p5_r':x[15],  \
+                          'p6':str(x[16]), 'p6_s':x[17], 'p6_r':x[18]})
+        print games
         return games
 
     # retrieve all games that had player involved in it
@@ -197,26 +201,23 @@ class DbSqlite():
                     p2Stats = self.getPlayerStats(results[j][1])
                     p1R = Rating(p1Stats[1],p1Stats[2])
                     p2R = Rating(p2Stats[1],p2Stats[2])
-                    print results[i][1] + ' (' + str(p1R.mu) + ',' + str(p1R.sigma) + ')' + ' vs. ' + \
-                          results[j][1] + ' (' + str(p2R.mu) + ',' + str(p2R.sigma) + ')'
                     new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
-                    print results[i][1] + ' (' + str(new_p1R.mu) + ',' + str(new_p1R.sigma) + ')' + ' vs. ' + \
-                          results[j][1] + ' (' + str(new_p2R.mu) + ',' + str(new_p2R.sigma) + ')'
                     p1TS = new_p1R.mu - (3 * new_p1R.sigma)
                     p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
                     self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
                     self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
                             
-#        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?,?,?,?,?,?,?,?,?)',
-#                (data['t'], 
-#                data['p1'], data['p1_r'],
-#                data['p2'], data['p2_r'],
-#                data['p3'], data['p3_r'],
-#                data['p4'], data['p4_r'],
-#                data['p5'], data['p5_r'],
-#                data['p6'], data['p6_r'])
-#            )
-#        self.conn.commit()
+        # Store the game        
+        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)',
+                (time.mktime(time.gmtime()), 
+                players[0], self.getPlayerRating(players[0]), scores[0], 
+                players[1], self.getPlayerRating(players[1]), scores[1], 
+                players[2], self.getPlayerRating(players[2]), scores[2], 
+                players[3], self.getPlayerRating(players[3]), scores[3], 
+                players[4], self.getPlayerRating(players[4]), scores[4], 
+                players[5], self.getPlayerRating(players[5]), scores[5])
+            )
+        self.conn.commit()
 
     #--------------------------------------------------------------------------
     # setup/testing stuff

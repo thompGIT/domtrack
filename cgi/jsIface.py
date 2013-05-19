@@ -66,14 +66,16 @@ if op == 'getstats':
 #     estats = db.getPlayerStatsExtended(player)
 #     print estats,
 
-# if op == 'getGames':
-#     games = db.getGames()
-#     for g in games:
-#         print "%d,%s,%d,%d,%s,%d,%d,%s,%d,%d,%s,%d,%d" % (
-#                             g['t'], 
-#                             g['a1'], g['a1_r'], g['a1_rd'],
-#                             g['a2'], g['a2_r'], g['a2_rd'],
-#                             g['b1'], g['b1_r'], g['b1_rd'],
-#                             g['b2'], g['b2_r'], g['b2_rd'] )
+if op == 'getGames':
+    games = db.getGames()
+    for g in games:
+        print "%d,%s,%d,%f,%s,%d,%f,%s,%d,%f,%s,%d,%f,%s,%d,%f,%s,%d,%f" % (
+                             g['t'], 
+                             g['p1'], g['p1_s'], g['p1_r'],
+                             g['p2'], g['p2_s'], g['p2_r'],
+                             g['p3'], g['p3_s'], g['p3_r'],
+                             g['p4'], g['p4_s'], g['p4_r'],
+                             g['p5'], g['p5_s'], g['p5_r'],
+                             g['p6'], g['p6_s'], g['p6_r'] )
 
 
