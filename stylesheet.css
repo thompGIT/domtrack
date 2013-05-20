@@ -117,6 +117,16 @@ div.playerSelectScore {
 .playerStats {
 }
 
+div.gameLogPlayerEntry {
+    background-color: #5882FA;
+    font-size: medium;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-shadow: 5px 5px 5px #888888;
+}
+
 .tbVP {
 	width:  80px;
 	height: 40px;

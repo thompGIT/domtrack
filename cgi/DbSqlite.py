@@ -142,18 +142,32 @@ class DbSqlite():
     # game stats
     #--------------------------------------------------------------------------
     def getGames(self, since=0):
-        self.c.execute('SELECT * from games WHERE time>(?) order by time', (since,))
-
+        sql =  'SELECT ' \
+             + 'time' \
+             + ',P1,P1Score,P1Rating' \
+             + ',P2,P2Score,P2Rating' \
+             + ',P3,P3Score,P3Rating' \
+             + ',P4,P4Score,P4Rating' \
+             + ',P5,P5Score,P5Rating' \
+             + ',P6,P6Score,P6Rating' \
+             + ' FROM games WHERE time>(?) order by time';
+        self.c.execute(sql, (since,))
         games = []
         for x in self.c.fetchall():
-            games.append({'t':x[0], \
-                          'p1':str(x[1]),  'p1_s':x[2],  'p1_r':x[3],  \
-                          'p2':str(x[4]),  'p2_s':x[5],  'p2_r':x[6],  \
-                          'p3':str(x[7]),  'p3_s':x[8],  'p3_r':x[9],  \
-                          'p4':str(x[10]), 'p4_s':x[11], 'p4_r':x[12],  \
-                          'p5':str(x[13]), 'p5_s':x[14], 'p5_r':x[15],  \
-                          'p6':str(x[16]), 'p6_s':x[17], 'p6_r':x[18]})
-        print games
+#            games.append({'t':x[0], \
+#                          'p1':str(x[1]),  'p1_s':x[2],  'p1_r':x[3],  \
+#                          'p2':str(x[4]),  'p2_s':x[5],  'p2_r':x[6],  \
+#                          'p3':str(x[7]),  'p3_s':x[8],  'p3_r':x[9],  \
+#                          'p4':str(x[10]), 'p4_s':x[11], 'p4_r':x[12],  \
+#                          'p5':str(x[13]), 'p5_s':x[14], 'p5_r':x[15],  \
+#                          'p6':str(x[16]), 'p6_s':x[17], 'p6_r':x[18]})
+            games.append([ x[0],
+                           x[1],  x[2],  x[3],   \
+                           x[4],  x[5],  x[6],   \
+                           x[7],  x[8],  x[9],   \
+                           x[10], x[11], x[12],  \
+                           x[13], x[14], x[15],  \
+                           x[16], x[17], x[18]])
         return games
 
     # retrieve all games that had player involved in it

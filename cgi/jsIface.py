@@ -69,13 +69,13 @@ if op == 'getstats':
 if op == 'getGames':
     games = db.getGames()
     for g in games:
-        print "%d,%s,%d,%f,%s,%d,%f,%s,%d,%f,%s,%d,%f,%s,%d,%f,%s,%d,%f" % (
-                             g['t'], 
-                             g['p1'], g['p1_s'], g['p1_r'],
-                             g['p2'], g['p2_s'], g['p2_r'],
-                             g['p3'], g['p3_s'], g['p3_r'],
-                             g['p4'], g['p4_s'], g['p4_r'],
-                             g['p5'], g['p5_s'], g['p5_r'],
-                             g['p6'], g['p6_s'], g['p6_r'] )
+        print "%d,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f" % (
+                             g[0], 
+                             g[1],  g[2],  g[3],
+                             g[4],  g[5],  g[6],
+                             g[7],  g[8],  g[9],
+                             g[10], g[11], g[12],
+                             g[13], g[14], g[15],
+                             g[16], g[17], g[18])
 
 

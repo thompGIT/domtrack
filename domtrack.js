@@ -943,20 +943,23 @@ function loadResultsVsOpponentsGraph(who) {
  * GAMES LIST MODE
  *****************************************************************************/
 function loadGamesList() {
-    var resp = ajax("cgi/jsIface.py?op=getGames")
+    var date  = new Date()
+    var resp  = ajax("cgi/jsIface.py?op=getGames")
     var lines = resp.split("\n")
+    lines.reverse()
 
-    var date = new Date()
 
     var html = ''
     html += '<table cellpadding=0 cellspacing=8px>\n'
     html += '<tr>\n'
-    html += '  <th>time</th>\n'
-    html += '  <th bgcolor=green>winners</th>\n'
-    html += '  <th bgcolor=red>losers</th>\n'
+    html += '  <th style="text-align:center">time</th>\n'
+    html += '  <th style="text-align:center">Player 1</th>\n'
+    html += '  <th style="text-align:center">Player 2</th>\n'
+    html += '  <th style="text-align:center">Player 3</th>\n'
+    html += '  <th style="text-align:center">Player 4</th>\n'
+    html += '  <th style="text-align:center">Player 5</th>\n'
+    html += '  <th style="text-align:center">Player 6</th>\n'
     html += '</tr>\n'
-
-    lines.reverse()
 
     for(var i in lines) {
         if(!lines[i]) {
@@ -965,15 +968,24 @@ function loadGamesList() {
 
         var gameData = lines[i].split(",")
         var t = parseInt(gameData[0])
-        var a1 = gameData[1]
-        var a1_r = parseInt(gameData[2])
-        var a2 = gameData[4]
-        var a2_r = parseInt(gameData[5])
-        var b1 = gameData[7]
-        var b1_r = parseInt(gameData[8])
-        var b2 = gameData[10]
-        var b2_r = parseInt(gameData[11])
-
+        var p1   = gameData[1]
+        var p1_s = parseInt(gameData[2])
+        var p1_r = parseFloat(gameData[3])
+        var p2   = gameData[4]
+        var p2_s = parseInt(gameData[5])
+        var p2_r = parseFloat(gameData[6])
+        var p3   = gameData[7]
+        var p3_s = parseInt(gameData[8])
+        var p3_r = parseFloat(gameData[9])
+        var p4   = gameData[10]
+        var p4_s = parseInt(gameData[11])
+        var p4_r = parseFloat(gameData[12])
+        var p5   = gameData[13]
+        var p5_s = parseInt(gameData[14])
+        var p5_r = parseFloat(gameData[15])
+        var p6   = gameData[16]
+        var p6_s = parseInt(gameData[17])
+        var p6_r = parseFloat(gameData[18])        
         date.setTime(t*1000)
 
         html += '<tr>\n'
@@ -981,12 +993,22 @@ function loadGamesList() {
         html += longAgoStrStealth(date.getTime() / 1000) + "\n"
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=chesswhite>' + a1 + "(" + a1_r + ")</div>\n"
-        html += '    <div class=chessblack>' + a2 + "(" + a2_r + ")</div>\n"
+        html += '    <div class=gameLogPlayerEntry><b>' + p1 + '</b> <i>(' + p1_r + ')</i> <b>[' + p1_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=chessblack>' + b1 + "(" + b1_r + ")</div>\n"
-        html += '    <div class=chesswhite>' + b2 + "(" + b2_r + ")</div>\n"
+        html += '    <div class=gameLogPlayerEntry><b>' + p2 + '</b> <i>(' + p2_r + ')</i> <b>[' + p2_s + ']</b></div>\n'
+        html += '  </td>\n'
+        html += '  <td>\n'
+        html += '    <div class=gameLogPlayerEntry><b>' + p3 + '</b> <i>(' + p3_r + ')</i> <b>[' + p3_s + ']</b></div>\n'
+        html += '  </td>\n'
+        html += '  <td>\n'
+        html += '    <div class=gameLogPlayerEntry><b>' + p4 + '</b> <i>(' + p4_r + ')</i> <b>[' + p4_s + ']</b></div>\n'
+        html += '  </td>\n'
+        html += '  <td>\n'
+        html += '    <div class=gameLogPlayerEntry><b>' + p5 + '</b> <i>(' + p5_r + ')</i> <b>[' + p5_s + ']</b></div>\n'
+        html += '  </td>\n'
+        html += '  <td>\n'
+        html += '    <div class=gameLogPlayerEntry><b>' + p6 + '</b> <i>(' + p6_r + ')</i> <b>[' + p6_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
         html += '    <input type=submit value="Delete" onClick="deleteGame_cb(this, ' + t + ')">\n'
