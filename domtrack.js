@@ -91,7 +91,7 @@ function longAgoStrStealth(epoch) {
     }
     /* print the date and the days ago string */
     else {
-        answer = dateToStringMini(dateNow) + '<br>\n(' + longAgoStr(epoch) + ' ago )'
+        answer = dateToStringMini(dateNow)
     }
 
     return answer
@@ -196,12 +196,10 @@ function domtrackInit(x) {
     scoreElems = [score_p1, score_p2, score_p3, score_p4, score_p5, score_p6]
         
     /* individual stats mode */
-/*    elem_istatsPlayerChoice = document.getElementById("istatsPlayerChoice")    */
-
+    elem_istatsPlayerChoice = document.getElementById("istatsPlayerChoice")
     
     /* init global player vars */
     refreshPlayerDataStore()
-
 
     /* populate player choice drop-downs */
     playerNames.sort()
@@ -263,6 +261,11 @@ function showStats() {
     loadLeaderBoard()
     loadAllRatingsVsGamesGraph()
     loadAllRatingsHistoryGraph()
+}
+
+function showShuffler() {
+    alert("How's the shuffler coming Taylor?!?")
+//    hideAllBut(document.getElementById('shuffler'))
 }
 
 function showIStats() {
@@ -444,7 +447,8 @@ function loadLeaderBoard() {
     for(var i in rankedPlayers) {
         p = rankedPlayers[i]
 
-        if(playerToSigma[p] > 8.0) {
+        // Only add people who have played games to the leaderboard
+        if(playerToSigma[p] > 8.0) { 
             continue
         }
 
@@ -470,22 +474,31 @@ function loadAllRatingsHistoryGraph() {
     var lines = resp.split("\n")
     for(var i in lines) {
         var data = lines[i].split(",")
-        var t = parseInt(data[0])
-        var a1 = data[1]
-        var a1_r = parseInt(data[2])
-        var a2 = data[4]
-        var a2_r = parseInt(data[5])
-        var b1 = data[7]
-        var b1_r = parseInt(data[8])
-        var b2 = data[10]
-        var b2_r = parseInt(data[11])
-
+        var t = parseInt(data[0])        
+        var p1   = data[1]
+        var p1_s = parseInt(data[2])
+        var p1_r = parseFloat(data[3])
+        var p2   = data[4]
+        var p2_s = parseInt(data[5])
+        var p2_r = parseFloat(data[6])
+        var p3   = data[7]
+        var p3_s = parseInt(data[8])
+        var p3_r = parseFloat(data[9])
+        var p4   = data[10]
+        var p4_s = parseInt(data[11])
+        var p4_r = parseFloat(data[12])
+        var p5   = data[13]
+        var p5_s = parseInt(data[14])
+        var p5_r = parseFloat(data[15])
+        var p6   = data[16]
+        var p6_s = parseInt(data[17])
+        var p6_r = parseFloat(data[18])        
         if(isNaN(t)) {
             continue
         }
 
-        var players = [a1, a2, b1, b2]
-        var ratings = [a1_r, a2_r, b1_r, b2_r]
+        var players = [p1, p2, p3, p4, p5, p6]
+        var ratings = [p1_r, p2_r, p3_r, p4_r, p5_r, p6_r]
 
         /* update each player's data from the game */
         for(var j in players) {
@@ -513,7 +526,7 @@ function loadAllRatingsHistoryGraph() {
             continue
         }
 
-        playerToObject[p]['data'].push([tNow, playerToR[p]])
+        playerToObject[p]['data'].push([tNow, playerToRating[p]])
     }
 
     /* build the series as an array of player objects */
@@ -581,25 +594,34 @@ function loadAllRatingsVsGamesGraph() {
 
     var resp = ajax("cgi/jsIface.py?op=getGames")
     var lines = resp.split("\n")
-    for(var i in lines) {
+    for(var i in lines) {    
         var data = lines[i].split(",")
-        var t = parseInt(data[0])
-        var a1 = data[1]
-        var a1_r = parseInt(data[2])
-        var a2 = data[4]
-        var a2_r = parseInt(data[5])
-        var b1 = data[7]
-        var b1_r = parseInt(data[8])
-        var b2 = data[10]
-        var b2_r = parseInt(data[11])
-
+        var t = parseInt(data[0])        
+        var p1   = data[1]
+        var p1_s = parseInt(data[2])
+        var p1_r = parseFloat(data[3])
+        var p2   = data[4]
+        var p2_s = parseInt(data[5])
+        var p2_r = parseFloat(data[6])
+        var p3   = data[7]
+        var p3_s = parseInt(data[8])
+        var p3_r = parseFloat(data[9])
+        var p4   = data[10]
+        var p4_s = parseInt(data[11])
+        var p4_r = parseFloat(data[12])
+        var p5   = data[13]
+        var p5_s = parseInt(data[14])
+        var p5_r = parseFloat(data[15])
+        var p6   = data[16]
+        var p6_s = parseInt(data[17])
+        var p6_r = parseFloat(data[18])        
         if(isNaN(t)) {
             continue
         }
 
-        var players = [a1, a2, b1, b2]
-        var ratings = [a1_r, a2_r, b1_r, b2_r]
-
+        var players = [p1, p2, p3, p4, p5, p6]
+        var ratings = [p1_r, p2_r, p3_r, p4_r, p5_r, p6_r]
+        
         /* update each player's data from the game */
         for(var i in players) {
             var p = players[i]
@@ -952,7 +974,7 @@ function loadGamesList() {
     var html = ''
     html += '<table cellpadding=0 cellspacing=8px>\n'
     html += '<tr>\n'
-    html += '  <th style="text-align:center">time</th>\n'
+    html += '  <th style="text-align:center">Date</th>\n'
     html += '  <th style="text-align:center">Player 1</th>\n'
     html += '  <th style="text-align:center">Player 2</th>\n'
     html += '  <th style="text-align:center">Player 3</th>\n'
@@ -987,28 +1009,36 @@ function loadGamesList() {
         var p6_s = parseInt(gameData[17])
         var p6_r = parseFloat(gameData[18])        
         date.setTime(t*1000)
+        
+        var players = [p1, p2, p3, p4, p5, p6]
+        var ratings = [p1_r, p2_r, p3_r, p4_r, p5_r, p6_r]
+        var scores  = [p1_s, p2_s, p3_s, p4_s, p5_s, p6_s]
+        
+        var DivLoser  = 'class=gameLogPlayerEntry'
+        var DivWinner = 'class=gameLogPlayerEntryWin'
+        var win       = scores.indexOf(Math.max.apply(window,scores))
 
         html += '<tr>\n'
-        html += '  <td>\n'
+        html += '  <td width=250px align=center>\n'
         html += longAgoStrStealth(date.getTime() / 1000) + "\n"
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=gameLogPlayerEntry><b>' + p1 + '</b> <i>(' + p1_r + ')</i> <b>[' + p1_s + ']</b></div>\n'
+        html += '    <div ' + ((p1_s==scores[win]) ? DivWinner : DivLoser) + '><b>' + p1 + '</b> <i>(' + p1_r + ')</i> <b>[' + p1_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=gameLogPlayerEntry><b>' + p2 + '</b> <i>(' + p2_r + ')</i> <b>[' + p2_s + ']</b></div>\n'
+        html += '    <div ' + ((p2_s==scores[win]) ? DivWinner : DivLoser) + '><b>' + p2 + '</b> <i>(' + p2_r + ')</i> <b>[' + p2_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=gameLogPlayerEntry><b>' + p3 + '</b> <i>(' + p3_r + ')</i> <b>[' + p3_s + ']</b></div>\n'
+        html += '    <div ' + ((p3_s==scores[win]) ? DivWinner : DivLoser) + '><b>' + p3 + '</b> <i>(' + p3_r + ')</i> <b>[' + p3_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=gameLogPlayerEntry><b>' + p4 + '</b> <i>(' + p4_r + ')</i> <b>[' + p4_s + ']</b></div>\n'
+        html += '    <div ' + ((p4_s==scores[win]) ? DivWinner : DivLoser) + '><b>' + p4 + '</b> <i>(' + p4_r + ')</i> <b>[' + p4_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=gameLogPlayerEntry><b>' + p5 + '</b> <i>(' + p5_r + ')</i> <b>[' + p5_s + ']</b></div>\n'
+        html += '    <div ' + ((p5_s==scores[win]) ? DivWinner : DivLoser) + '><b>' + p5 + '</b> <i>(' + p5_r + ')</i> <b>[' + p5_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
-        html += '    <div class=gameLogPlayerEntry><b>' + p6 + '</b> <i>(' + p6_r + ')</i> <b>[' + p6_s + ']</b></div>\n'
+        html += '    <div ' + ((p6_s==scores[win]) ? DivWinner : DivLoser) + '><b>' + p6 + '</b> <i>(' + p6_r + ')</i> <b>[' + p6_s + ']</b></div>\n'
         html += '  </td>\n'
         html += '  <td>\n'
         html += '    <input type=submit value="Delete" onClick="deleteGame_cb(this, ' + t + ')">\n'

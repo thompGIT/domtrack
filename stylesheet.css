@@ -124,6 +124,18 @@ div.gameLogPlayerEntry {
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
+    width: 175px;
+    box-shadow: 5px 5px 5px #888888;
+}
+
+div.gameLogPlayerEntryWin {
+    background-color: #00aa00;
+    font-size: medium;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 175px;
     box-shadow: 5px 5px 5px #888888;
 }
 
