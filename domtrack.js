@@ -448,7 +448,7 @@ function loadLeaderBoard() {
         p = rankedPlayers[i]
 
         // Only add people who have played games to the leaderboard
-        if(playerToSigma[p] > 8.0) { 
+        if(playerToSigma[p] > 4.0) { 
             continue
         }
 
