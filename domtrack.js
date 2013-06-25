@@ -91,7 +91,7 @@ function longAgoStrStealth(epoch) {
     }
     /* print the date and the days ago string */
     else {
-        answer = dateToStringMini(dateNow)
+        answer = dateToStringMini(dateThen)
     }
 
     return answer
@@ -250,10 +250,6 @@ function showPlay() {
     hideAllBut(document.getElementById('play'))
 }
 
-function showScheduler() {
-    hideAllBut(document.getElementById('scheduler'))
-}
-
 function showStats() {
     hideAllBut(document.getElementById('stats'))
 
@@ -264,8 +260,7 @@ function showStats() {
 }
 
 function showShuffler() {
-    alert("How's the shuffler coming Taylor?!?")
-//    hideAllBut(document.getElementById('shuffler'))
+    hideAllBut(document.getElementById('shuffler'))
 }
 
 function showIStats() {
