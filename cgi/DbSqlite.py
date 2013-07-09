@@ -120,6 +120,10 @@ class DbSqlite():
         self.c.execute('INSERT into players values(?,?,?,?,?)', (name, rating, mu, sigma, t))
         self.conn.commit()
         
+    def deletePlayer(self, name):
+        self.c.execute('DELETE from players where name=?', (name,));
+        self.conn.commit();
+        
     def setPlayerRating(self, name, r):
         self.c.execute('UPDATE players SET rating=?', (r,))
         self.conn.commit()

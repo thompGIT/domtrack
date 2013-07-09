@@ -1055,9 +1055,15 @@ function deleteGame_cb(e, gameId) {
 }
 
 function addPlayer() {
-	newPlayer = document.getElementById("addPlayerName").value;
-	console.log('Adding Player: ' + newPlayer)
-    ajax("cgi/jsIface.py?op=addPlayer&player=" + newPlayer)
+	player = document.getElementById("addPlayerName").value;
+	console.log('Adding Player: ' + player)
+    ajax("cgi/jsIface.py?op=addPlayer&player=" + player)
+}
+
+function deletePlayer() {
+	player = document.getElementById("deletePlayerName").value;
+	console.log('Deleting Player: ' + player)
+    ajax("cgi/jsIface.py?op=deletePlayer&player=" + player)
 }
 
 function recalcScores() {

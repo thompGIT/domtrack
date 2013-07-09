@@ -57,6 +57,10 @@ if op == 'getplayers':
 if op == 'addPlayer':
     player = form['player'].value
     db.addPlayer(player)
+    
+if op == 'deletePlayer':
+    player = form['player'].value
+    db.deletePlayer(player)
 
 if op == 'getstats':
     player = form['player'].value
