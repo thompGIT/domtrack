@@ -53,6 +53,10 @@ if op == 'getplayers':
     for p in pl:
         [rating, mu, sigma, t] = db.getPlayerStats(p)
         print "%s,%.2f,%.2f,%.2f,%d" % (p, rating, mu, sigma, t)
+        
+if op == 'addPlayer':
+    player = form['player'].value
+    db.addPlayer(player)
 
 if op == 'getstats':
     player = form['player'].value

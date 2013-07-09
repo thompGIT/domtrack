@@ -16,7 +16,7 @@
         <div class="menu">
             DomTrack: 
             <input type=submit class="menu" onclick="showPlay()"      value="Play" />
-            <input type=submit class="menu" onclick="showShuffler()"  value="Shuffle" />
+            <input type=submit class="menu" onclick="showShuffler()"  value="Shuffler" />
             <input type=submit class="menu" onclick="showStats()"     value="Overall Stats" />
             <input type=submit class="menu" onclick="showIStats()"    value="Individual Stats" />
             <input type=submit class="menu" onclick="showGamesList()" value="Games History" />
@@ -164,6 +164,13 @@
                 </tr>
             </table>
         </div>
+        
+        <!-- MODE: Shuffler -->
+        <div id="shuffler" style="margin: 1em">
+            <table width="100%" cellpadding=12 cellspacing=0>
+                <tr>
+            </table>
+        </div>
 
         <!-- MODE: OVERALL STATS -->
         <div id="stats" style="margin: 1em">
@@ -194,9 +201,14 @@
         <div id="games" style="margin: 1em">
         </div>
 
-        <!-- MODE: ADMIN (add user / etc.) -->
-        <div id="admin">
-            <h3>Admin Page! (add new user, etc.)</h3>
+        <!-- MODE: ADMIN (add user / etc.) -->        
+        <div id="admin" style="margin: 1em">
+            <h3>Add New Player</h3>
+            <div>
+				Player Name: 
+				<input id='addPlayerName' type='text'>
+                <input id="Record" class="SubmitButton" type=submit value="Submit" onClick="addPlayer(this)">
+            </div>
         </div>
 
     </body>

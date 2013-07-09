@@ -1054,6 +1054,12 @@ function deleteGame_cb(e, gameId) {
     e.disabled = 1
 }
 
+function addPlayer() {
+	newPlayer = document.getElementById("addPlayerName").value;
+	console.log('Adding Player: ' + newPlayer)
+    ajax("cgi/jsIface.py?op=addPlayer&player=" + newPlayer)
+}
+
 function recalcScores() {
     /* clear players' stats */
     for(var i in playerNames) {
