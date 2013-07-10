@@ -11,6 +11,7 @@ import trueskill
 from trueskill import Rating
 
 dbFile = 'domtrack.db'
+cardsDbFile = 'cards.db'
 
 class DbSqlite():
 
@@ -158,13 +159,6 @@ class DbSqlite():
         self.c.execute(sql, (since,))
         games = []
         for x in self.c.fetchall():
-#            games.append({'t':x[0], \
-#                          'p1':str(x[1]),  'p1_s':x[2],  'p1_r':x[3],  \
-#                          'p2':str(x[4]),  'p2_s':x[5],  'p2_r':x[6],  \
-#                          'p3':str(x[7]),  'p3_s':x[8],  'p3_r':x[9],  \
-#                          'p4':str(x[10]), 'p4_s':x[11], 'p4_r':x[12],  \
-#                          'p5':str(x[13]), 'p5_s':x[14], 'p5_r':x[15],  \
-#                          'p6':str(x[16]), 'p6_s':x[17], 'p6_r':x[18]})
             games.append([ x[0],
                            x[1],  x[2],  x[3],   \
                            x[4],  x[5],  x[6],   \
@@ -238,6 +232,97 @@ class DbSqlite():
         self.conn.commit()
 
     #--------------------------------------------------------------------------
+    # shuffler stuff
+    #--------------------------------------------------------------------------
+    def shuffleCards(self, setsString):
+		
+        # Tokenize the sets string
+        sets = setsString.split(',')		
+        
+        # Disallowed cards
+        excludedCards = ['Platnum','Colony',                # Prosperity
+                         'Potion',                          # Alchemy
+                         'Spoils','Madman','Mercenary',     # Dark Ages
+                         'Trusty Steed','Princess',         # Cornucopia (Prizes)
+                         'Followers','Diadem','Bag of Gold']
+		
+        # Grab the raw cards from the database
+        sql  = 'SELECT Expansion,Title,Cost_P FROM cards WHERE'
+        sql += ' (Ru = 0) and '                               # Exclude individual Ruins
+        sql += ' (Kn = 0 or Title = \'Sir Martin\') and '     # Exclude individual Knights
+        for s in sets:
+            sql += ' Expansion = \'' + s + '\' or'
+        sql = sql[:-2]
+        sql += 'ORDER BY RANDOM() LIMIT 10'
+        		
+        self.cards_c.execute(sql)
+		
+        # Clean up the results
+        cards = []
+        for x in self.cards_c.fetchall():
+            cards.append([ x[0], x[1], x[2] ])
+            	    
+        # Add Colonies and Platnum?
+        for card in cards:
+            if card[0] == 'Prosperity':
+                cards.append(['Prosperity','Colony',0])
+                cards.append(['Prosperity','Platnum',0])
+                break
+                
+        # Add Shelters?
+        for card in cards:
+            if card[0] == 'Dark Ages':
+                cards.append(['Dark Ages','Shelters*',0])
+                break
+		
+        # Add Potions?
+        for card in cards:
+            if card[2] == 1:
+                cards.append(['Alchemy','Potion',0])
+                break
+		
+        # Add Prizes?
+        for card in cards:
+            if card[1] == 'Tournament':
+                cards.append(['Cornucopia','Prizes*',0])
+                break
+                
+        # Add Knights?
+        for card in cards:
+            if card[1] == 'Sir Martin':
+                cards.append(['Dark Ages','Knights*',0])
+                break
+		
+        # Add Spoils?
+        for card in cards:
+            if card[1] == 'Marauder' or card[1] == 'Bandit Camp' or card[1] == 'Pillage':
+                cards.append(['Dark Ages','Spoils',0])
+                break
+                
+        # Add Madman?
+        for card in cards:
+            if card[1] == 'Hermit':
+                cards.append(['Dark Ages','Madman',0])
+                break
+		
+        # Add Mercenary?
+        for card in cards:
+            if card[1] == 'Urchin':
+                cards.append(['Dark Ages','Mercenary',0])
+                break
+                
+        # Add Ruins?
+        for card in cards:
+            if card[1] == 'Marauder' or card[1] == 'Cultist' or card[1] == 'Death Cart':
+                cards.append(['Dark Ages','Spoils',0])
+                break
+                
+        cards.sort()
+		        		          
+        return cards
+		
+
+    #--------------------------------------------------------------------------
     # setup/testing stuff
     #--------------------------------------------------------------------------
     #
@@ -247,12 +332,15 @@ class DbSqlite():
         if ( os.path.exists(dbFile) ):
             createDB = 0
 
-        # Connect to database
-        #print 'Connecting to database [' + dbFile + ']...'
+        # Connect to players / games database
         self.conn = sqlite3.connect(dbFile)
         self.c = self.conn.cursor()
+        
+        # Connect to cards database
+        self.cards_conn = sqlite3.connect(cardsDbFile)
+        self.cards_c = self.cards_conn.cursor()
 
-        # If the database did not already exist, create it from scratch
+        # If players / games database did not already exist, create it from scratch
         if ( createDB ):
             print '\tInitializing new database...'
             self.createDatabase()

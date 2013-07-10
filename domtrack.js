@@ -164,7 +164,7 @@ function domtrackInit(x) {
 
     /* overall modes; play is the default */
     showElems.push(document.getElementById("play"))
-    showElems.push(document.getElementById("shuffle"))
+    showElems.push(document.getElementById("shuffler"))
     showElems.push(document.getElementById("stats"))
     showElems.push(document.getElementById("istats"))
     showElems.push(document.getElementById("games"))
@@ -423,6 +423,34 @@ function clearPlayers(elem)
     }   
     
     playShowRatings()
+}
+
+function shuffleCards() {	
+	
+	// Gather the requested expansions to shuffle
+	var form = document.getElementById('form_shuffle')
+	var sets = ""
+	for (var i=0; i<form.length; i++) {
+		if (form[i].checked) {
+			sets += form[i].value + ","
+		}
+	}
+	sets = sets.slice(0,-1)
+			
+	// Request the shuffle
+    var resp = ajax("cgi/jsIface.py?op=shuffle&sets=" + sets)
+    
+    // Process the results    
+    var html  = '<br>'
+    var lines = resp.split("\n")
+    console.log(lines)
+    for(var i in lines) {
+        var elements = lines[i].split(",")
+        if (elements.length > 1)
+            html += elements[0] + ' - ' + elements[1] + '<br>'
+    }
+        
+    document.getElementById("ShuffleResults").innerHTML = html
 }
 
 /******************************************************************************

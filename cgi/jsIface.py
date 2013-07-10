@@ -86,4 +86,9 @@ if op == 'getGames':
                              g[13], g[14], g[15],
                              g[16], g[17], g[18])
 
-
+if op == 'shuffle':
+	sets = form['sets'].value
+	cards = db.shuffleCards(sets)
+	for c in cards:
+	    print "%s,%s" % (c[0],c[1])
+	

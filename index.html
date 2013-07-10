@@ -167,9 +167,21 @@
         
         <!-- MODE: Shuffler -->
         <div id="shuffler" style="margin: 1em">
-            <table width="100%" cellpadding=12 cellspacing=0>
-                <tr>
-            </table>
+			<form id="form_shuffle">
+				<input type="checkbox" name="sets" value="Base">Base<br>
+				<input type="checkbox" name="sets" value="Alchemy">Alchemy<br>
+				<input type="checkbox" name="sets" value="Cornucopia">Cornucopia<br>
+				<input type="checkbox" name="sets" value="Dark Ages">Dark Ages<br>
+				<input type="checkbox" name="sets" value="Hinterlands">Hinterlands<br>
+				<input type="checkbox" name="sets" value="Intrigue">Intrigue<br>
+				<input type="checkbox" name="sets" value="Prosperity">Prosperity<br>
+				<input type="checkbox" name="sets" value="Promo">Promo<br>
+				<input type="checkbox" name="sets" value="Seaside">Seaside<br>
+				<input type="checkbox" name="sets" value="Guilds">Guilds<br>
+			</form>
+            <input type=submit name="submitShuffle" class="SubmitButton" value="Shuffle" onClick="shuffleCards(this)">
+            <div id="ShuffleResults"></div>
+<!--			<img src="images/base/chapel.jpg"></img>    -->
         </div>
 
         <!-- MODE: OVERALL STATS -->
