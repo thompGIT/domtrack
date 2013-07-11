@@ -443,11 +443,14 @@ function shuffleCards() {
     // Process the results    
     var html  = '<br>'
     var lines = resp.split("\n")
-    console.log(lines)
     for(var i in lines) {
         var elements = lines[i].split(",")
-        if (elements.length > 1)
-            html += '<a href=\'images/' + elements[0].toLowerCase() + '/' + elements[1].toLowerCase() + '.jpg\' target=\'_blank\'>' + elements[0] + ' - ' + elements[1] + '</a><br>'
+        if (elements.length > 1) {
+            console.log(elements)
+            var expansion = elements[0].toLowerCase().replace(/\s/g, '')
+            var card = elements[1].toLowerCase().replace(/\s/g, '')
+            html += '<a href=\'images/' + expansion + '/' + card + '.jpg\' target=\'_blank\'>' + elements[0] + ' - ' + elements[1] + '</a><br>'
+        }
     }
         
     document.getElementById("ShuffleResults").innerHTML = html
