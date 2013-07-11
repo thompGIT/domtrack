@@ -240,7 +240,7 @@ class DbSqlite():
         sets = setsString.split(',')		
         
         # Disallowed cards
-        excludedCards = ['Platnum','Colony',                # Prosperity
+        excludedCards = ['Platinum','Colony',               # Prosperity
                          'Potion',                          # Alchemy
                          'Spoils','Madman','Mercenary',     # Dark Ages
                          'Trusty Steed','Princess',         # Cornucopia (Prizes)
@@ -249,11 +249,16 @@ class DbSqlite():
         # Grab the raw cards from the database
         sql  = 'SELECT Expansion,Title,Cost_P FROM cards WHERE'
         sql += ' (Ru = 0) and '                               # Exclude individual Ruins
-        sql += ' (Kn = 0 or Title = \'Sir Martin\') and '     # Exclude individual Knights
-        for s in sets:
+        sql += ' (Kn = 0 or Title = \'Sir Martin\') '         # Exclude individual Knights
+        
+        for c in excludedCards:                               # Exclude special cards
+            sql += ' and Title != \'' + c + '\''
+        
+        sql += ' and ('
+        for s in sets:                                        # Only pull from requested expansions
             sql += ' Expansion = \'' + s + '\' or'
         sql = sql[:-2]
-        sql += 'ORDER BY RANDOM() LIMIT 10'
+        sql += ') ORDER BY RANDOM() LIMIT 10'
         		
         self.cards_c.execute(sql)
 		
@@ -263,17 +268,13 @@ class DbSqlite():
             cards.append([ x[0], x[1], x[2] ])
             	    
         # Add Colonies and Platnum?
-        for card in cards:
-            if card[0] == 'Prosperity':
-                cards.append(['Prosperity','Colony',0])
-                cards.append(['Prosperity','Platnum',0])
-                break
+        if cards[0][0] == 'Prosperity':
+            cards.append(['Prosperity','Colony',0])
+            cards.append(['Prosperity','Platinum',0])
                 
         # Add Shelters?
-        for card in cards:
-            if card[0] == 'Dark Ages':
-                cards.append(['Dark Ages','Shelters*',0])
-                break
+        if cards[0][0] == 'Dark Ages':
+            cards.append(['Dark Ages','Shelters*',0])
 		
         # Add Potions?
         for card in cards:
@@ -314,7 +315,7 @@ class DbSqlite():
         # Add Ruins?
         for card in cards:
             if card[1] == 'Marauder' or card[1] == 'Cultist' or card[1] == 'Death Cart':
-                cards.append(['Dark Ages','Spoils',0])
+                cards.append(['Dark Ages','Ruins*',0])
                 break
                 
         cards.sort()
