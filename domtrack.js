@@ -447,7 +447,7 @@ function shuffleCards() {
     for(var i in lines) {
         var elements = lines[i].split(",")
         if (elements.length > 1)
-            html += elements[0] + ' - ' + elements[1] + '<br>'
+            html += '<a href=\'images/' + elements[0].toLowerCase() + '/' + elements[1].toLowerCase() + '.jpg\' target=\'_blank\'>' + elements[0] + ' - ' + elements[1] + '</a><br>'
     }
         
     document.getElementById("ShuffleResults").innerHTML = html
