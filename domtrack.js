@@ -1,7 +1,7 @@
 /******************************************************************************
  * debug
  *****************************************************************************/
-var g_DEBUG = 1
+var g_DEBUG = 0
 
 function debug(msg) {
     if(g_DEBUG) {
@@ -442,16 +442,18 @@ function shuffleCards() {
     
     // Process the results    
     var html  = '<br>'
+    var htmlKingdom = ''
     var lines = resp.split("\n")
     for(var i in lines) {
         var elements = lines[i].split(",")
         if (elements.length > 1) {
-            console.log(elements)
             var expansion = elements[0].toLowerCase().replace(/\s/g, '')
             var card = elements[1].toLowerCase().replace(/\s/g, '')
-            html += '<a href=\'images/' + expansion + '/' + card + '.jpg\' target=\'_blank\'>' + elements[0] + ' - ' + elements[1] + '</a><br>'
+            html += elements[0] + ' - ' + elements[1] + '<br>'
+            htmlKingdom += '<img src=\'images/' + expansion + '/' + card + '.jpg\'><br>'
         }
     }
+    html += '<br><br>' + htmlKingdom
         
     document.getElementById("ShuffleResults").innerHTML = html
 }
