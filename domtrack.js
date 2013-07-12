@@ -1,7 +1,7 @@
 /******************************************************************************
  * debug
  *****************************************************************************/
-var g_DEBUG = 0
+var g_DEBUG = 1
 
 function debug(msg) {
     if(g_DEBUG) {
@@ -476,7 +476,7 @@ function loadLeaderBoard() {
         p = rankedPlayers[i]
 
         // Only add people who have played games to the leaderboard
-        if(playerToSigma[p] > 4.0) { 
+        if(playerToSigma[p] > 3.0) { 
             continue
         }
 
@@ -827,71 +827,5 @@ function deletePlayer() {
 }
 
 function recalcScores() {
-    /* clear players' stats */
-    for(var i in playerNames) {
-        playerToR[playerNames[i]] = 1000
-        playerToRD[playerNames[i]] = 350
-        playerToT[playerNames[i]] = 0
-    }
-
-    /* get games */
-    var resp = ajax("cgi/jsIface.py?op=getGames")
-    var lines = resp.split("\n")
-
-    /* for each game */
-    for(var i in lines) {
-        var gameData = lines[i].split(",")
-        var t = parseInt(gameData[0])
-        var a1 = gameData[1]
-        var a2 = gameData[4]
-        var b1 = gameData[7]
-        var b2 = gameData[10]
-
-        if(isNaN(t)) {
-            continue
-        }
-
-        /* prepare parameters to calculate RESULTING game scores */ 
-        var players = [a1,a2,b1,b2]
-        var ratings = []
-        var rds = []
-        var rps = []
-        for(var j in players) {
-            ratings.push(playerToR[players[j]])
-            rds.push(playerToRD[players[j]])
-            rps.push(secToRatingPeriods(t - playerToT[players[j]]))
-        }
-
-        /* calculate new scores for next loop */
-        var results = calcGameScores(ratings, rds, rps); 
-
-        /* save them to database */
-        var req = 'cgi/jsIface.py?op=recordGame'
-        req += '&t=' + t
-        req += '&a1=' + a1 + "&a1_r=" + playerToR[a1] + "&a1_rd=" + playerToRD[a1]
-        req += '&a2=' + a2 + "&a2_r=" + playerToR[a2] + "&a2_rd=" + playerToRD[a2]
-        req += '&b1=' + b1 + "&b1_r=" + playerToR[b1] + "&b1_rd=" + playerToRD[b1]
-        req += '&b2=' + b2 + "&b2_r=" + playerToR[b2] + "&b2_rd=" + playerToRD[b2]
-        req += "&a1_r_new=" + results[0][0] + "&a1_rd_new=" + results[0][1]
-        req += "&a2_r_new=" + results[1][0] + "&a2_rd_new=" + results[1][1]
-        req += "&b1_r_new=" + results[2][0] + "&b1_rd_new=" + results[2][1]
-        req += "&b2_r_new=" + results[3][0] + "&b2_rd_new=" + results[3][1]
-        ajax(req)
-
-        /* save them locally, for next loop */
-        playerToR[a1] = results[0][0]
-        playerToRD[a1] = results[0][1]
-        playerToT[a1] = t
-        playerToR[a2] = results[1][0]
-        playerToRD[a2] = results[1][1]
-        playerToT[a2] = t
-        playerToR[b1] = results[2][0]
-        playerToRD[b1] = results[2][1]
-        playerToT[b1] = t
-        playerToR[b2] = results[3][0]
-        playerToRD[b2] = results[3][1]
-        playerToT[b2] = t
-    }
-
-    debug("done")
+    ajax("cgi/jsIface.py?op=recalculateScores")    
 }

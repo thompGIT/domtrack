@@ -41,7 +41,6 @@ if op == 'recordGame':
                    float(form['p3_vp'].value), float(form['p4_vp'].value), 
                    float(form['p5_vp'].value), float(form['p6_vp'].value)]
                 );
-
     print "OK",
 
 if op == 'deleteGame':
@@ -69,11 +68,6 @@ if op == 'getstats':
         [rating, mu, sigma, t] = db.getPlayerStats(player)
         print "%.2f,%.2f,%.2f,%d" % (rating, mu, sigma, t)
 
-# if op == 'getstatsextended':
-#     player = form['player'].value
-#     estats = db.getPlayerStatsExtended(player)
-#     print estats,
-
 if op == 'getGames':
     games = db.getGames()
     for g in games:
@@ -91,4 +85,7 @@ if op == 'shuffle':
 	cards = db.shuffleCards(sets)
 	for c in cards:
 	    print "%s,%s" % (c[0],c[1])
+	   
+if op == 'recalculateScores':
+    db.recalculateScores()
 	

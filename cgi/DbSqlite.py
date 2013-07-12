@@ -13,6 +13,10 @@ from trueskill import Rating
 dbFile      = 'domtrack.db'
 cardsDbFile = 'cards.db'
 
+BASE_RATING =  0.0
+BASE_MU     = 25.0
+BASE_SIGMA  =  8.33
+
 class DbSqlite():
 
     #--------------------------------------------------------------------------
@@ -113,7 +117,7 @@ class DbSqlite():
         return self.c.fetchall()[0]
 
     # add a new player to the system
-    def addPlayer(self, name, rating=0.0, mu=25.0, sigma=8.33, t=0):
+    def addPlayer(self, name, rating=BASE_RATING, mu=BASE_MU, sigma=BASE_SIGMA, t=0):
         self.c.execute('INSERT into players values(?,?,?,?,?)', (name, rating, mu, sigma, t))
         self.conn.commit()
         
@@ -203,7 +207,7 @@ class DbSqlite():
         self.conn.commit();
 
     # record a game
-    def recordGame(self, players, scores):
+    def recordGame(self, players, scores, t=0):
     
         # Remove all non-players, and sort based on score (hi to low)
         results_raw = zip(scores,players)
@@ -213,9 +217,17 @@ class DbSqlite():
         # Rate the game using ONLY ONE of the available scoring techniques
         self.rateGameTrueSkill(results)     # TrueSkill - Sub-Games 
         
+        # Create the query
+        sql  = 'INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)'
+        timestamp = time.mktime(time.gmtime())
+        if (t != 0):
+            timestamp = t
+        
+        print sql
+        
         # Store the game        
-        self.c.execute('INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)',
-                (time.mktime(time.gmtime()), 
+        self.c.execute(sql,
+                (timestamp, 
                 players[0], self.getPlayerRating(players[0]), scores[0], 
                 players[1], self.getPlayerRating(players[1]), scores[1], 
                 players[2], self.getPlayerRating(players[2]), scores[2], 
@@ -235,18 +247,43 @@ class DbSqlite():
         for i in range(0,len(results)):
             for j in range(i,len(results)):
                 if (i != j):                                # A player cannot play himself
-                    if (results[i][0] != results[j][0]):    # Throw out true ties (this could likely be better!)
-                        p1Stats = self.getPlayerStats(results[i][1])
-                        p2Stats = self.getPlayerStats(results[j][1])
-                        p1R = Rating(p1Stats[1],p1Stats[2])
-                        p2R = Rating(p2Stats[1],p2Stats[2])
-                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
-                        p1TS = new_p1R.mu - (3 * new_p1R.sigma)
-                        p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
-                        self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
-                        self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
+#                    if (results[i][0] != results[j][0]):    # Throw out true ties (this could likely be better!)
+                    p1Stats = self.getPlayerStats(results[i][1])
+                    p2Stats = self.getPlayerStats(results[j][1])
+                    p1R = Rating(p1Stats[1],p1Stats[2])
+                    p2R = Rating(p2Stats[1],p2Stats[2])
+                    new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
+                    p1TS = new_p1R.mu - (3 * new_p1R.sigma)
+                    p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
+                    self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
+                    self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
                             
-                            
+                 
+    # recalculate all scores in the games history database
+    def recalculateScores(self):
+        
+        # Get a list of all the games
+        gamesToScore = []
+        games = self.getGames()
+        for game in games:
+            players = []
+            scores  = []
+            for i in range(0,6):
+                players.append(game[1+(i*3)+0])
+                scores.append( game[1+(i*3)+1])
+            gamesToScore.append([int(game[0]),players,scores])        
+              
+        # Delete the old entries from the database and 
+        
+        # reset player ratings
+        players = self.getPlayerList()
+        for p in players:
+            self.setPlayerStats(p, [BASE_RATING, BASE_MU, BASE_SIGMA, time.mktime(time.gmtime())])
+                    
+        # Re-process the stored games
+        for g in gamesToScore:
+            self.recordGame(g[1],g[2],g[0])              
+                                          
     #--------------------------------------------------------------------------
     # shuffler related
     #--------------------------------------------------------------------------
