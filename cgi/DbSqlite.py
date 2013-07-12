@@ -247,16 +247,16 @@ class DbSqlite():
         for i in range(0,len(results)):
             for j in range(i,len(results)):
                 if (i != j):                                # A player cannot play himself
-#                    if (results[i][0] != results[j][0]):    # Throw out true ties (this could likely be better!)
-                    p1Stats = self.getPlayerStats(results[i][1])
-                    p2Stats = self.getPlayerStats(results[j][1])
-                    p1R = Rating(p1Stats[1],p1Stats[2])
-                    p2R = Rating(p2Stats[1],p2Stats[2])
-                    new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
-                    p1TS = new_p1R.mu - (3 * new_p1R.sigma)
-                    p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
-                    self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
-                    self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
+                    if (results[i][0] != results[j][0]):    # Throw out true ties (this could likely be better!)
+                        p1Stats = self.getPlayerStats(results[i][1])
+                        p2Stats = self.getPlayerStats(results[j][1])
+                        p1R = Rating(p1Stats[1],p1Stats[2])
+                        p2R = Rating(p2Stats[1],p2Stats[2])
+                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
+                        p1TS = new_p1R.mu - (3 * new_p1R.sigma)
+                        p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
+                        self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
+                        self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
                             
                  
     # recalculate all scores in the games history database
