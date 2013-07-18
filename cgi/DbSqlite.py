@@ -13,9 +13,17 @@ from trueskill import Rating
 dbFile      = 'domtrack.db'
 cardsDbFile = 'cards.db'
 
-BASE_RATING =  0.0
-BASE_MU     = 25.0
-BASE_SIGMA  =  8.33
+BASE_RATING   =   0.0
+
+# TrueSkill environment variables
+BASE_MU       =  25.0
+BASE_SIGMA    = BASE_MU / 3.0
+#BASE_TAU      = BASE_SIGMA / 100.0  # Dynamic factor; Speed at which rankings vary (Isotropic uses SIGMA/100)
+BASE_TAU      = 0.0833334           # Dynamic factor; Speed at which rankings vary (Isotropic uses SIGMA/100)
+#BASE_BETA     = BASE_MU             # How skills-based is the game (Isotripic uses 25)
+BASE_BETA     = 4.1666667           # How skills-based is the game (Isotripic uses 25)
+#BASE_DRAWPROB = 0.05                # Percentage of draw matches
+BASE_DRAWPROB = 0.1                 # Percentage of draw matches
 
 class DbSqlite():
 
@@ -215,8 +223,8 @@ class DbSqlite():
         results.sort(reverse=True)
         
         # Rate the game using ONLY ONE of the available scoring techniques
-        self.rateGameTrueSkill(results)     # TrueSkill - Sub-Games 
-        
+        self.rateGameTrueSkill1v1(results)     # TrueSkill - 1v1 Sub-Games 
+                
         # Create the query
         sql  = 'INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)'
         timestamp = time.mktime(time.gmtime())
@@ -241,23 +249,34 @@ class DbSqlite():
     #   Each multiplayer game is broken down into 1v1 matches for all players
     #   playing.
     #   Tie games are not calculated at all!
-    def rateGameTrueSkill(self, results):
+    def rateGameTrueSkill1v1(self, results):
+            
+        # Initialize the TS environment
+        env = trueskill.TrueSkill(mu=BASE_MU,
+                                  sigma=BASE_SIGMA,
+                                  beta=BASE_BETA,
+                                  tau=BASE_TAU,
+                                  draw_probability=BASE_DRAWPROB)
             
         # Calculate all valid sub-games
         for i in range(0,len(results)):
             for j in range(i,len(results)):
                 if (i != j):                                # A player cannot play himself
-                    if (results[i][0] != results[j][0]):    # Throw out true ties (this could likely be better!)
-                        p1Stats = self.getPlayerStats(results[i][1])
-                        p2Stats = self.getPlayerStats(results[j][1])
-                        p1R = Rating(p1Stats[1],p1Stats[2])
-                        p2R = Rating(p2Stats[1],p2Stats[2])
-                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
-                        p1TS = new_p1R.mu - (3 * new_p1R.sigma)
-                        p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
-                        self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
-                        self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
-                            
+                    p1Stats = self.getPlayerStats(results[i][1])
+                    p2Stats = self.getPlayerStats(results[j][1])
+                    p1R = Rating(p1Stats[1],p1Stats[2])
+                    p2R = Rating(p2Stats[1],p2Stats[2])
+                    if (results[i][0] != results[j][0]):
+#                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
+                        new_p1R, new_p2R = env.rate_1vs1(p1R,p2R)
+                    else:
+#                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R, drawn=True)
+                        new_p1R, new_p2R = env.rate_1vs1(p1R,p2R, drawn=True)
+                    p1TS = new_p1R.mu - (3 * new_p1R.sigma)
+                    p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
+                    self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
+                    self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
+             
                  
     # recalculate all scores in the games history database
     def recalculateScores(self):
@@ -304,6 +323,7 @@ class DbSqlite():
         # Grab the raw cards from the database
         sql  = 'SELECT Expansion,Title,Cost_P FROM cards WHERE'
         sql += ' (Ru = 0) and '                               # Exclude individual Ruins
+        sql += ' (Sh = 0) and '                               # Exclude individual Shelters
         sql += ' (Kn = 0 or Title = \'Sir Martin\') '         # Exclude individual Knights        
         for c in excludedCards:                               # Exclude special cards
             sql += ' and Title != \'' + c + '\''        
