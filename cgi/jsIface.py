@@ -35,11 +35,12 @@ if 'op' in form:
 
 if op == 'recordGame':
     db.recordGame([form['p1'].value, form['p2'].value, 
-                  form['p3'].value, form['p4'].value, 
-                  form['p5'].value, form['p6'].value],
+                   form['p3'].value, form['p4'].value, 
+                   form['p5'].value, form['p6'].value],
                   [float(form['p1_vp'].value), float(form['p2_vp'].value), 
                    float(form['p3_vp'].value), float(form['p4_vp'].value), 
-                   float(form['p5_vp'].value), float(form['p6_vp'].value)]
+                   float(form['p5_vp'].value), float(form['p6_vp'].value)],
+                  form['hash'].value
                 );
     print "OK",
 

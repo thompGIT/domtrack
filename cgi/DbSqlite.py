@@ -49,7 +49,8 @@ class DbSqlite():
             ['P5Score', 'REAL'],     # Player 5 Score
             ['P6',      'TEXT'],     # Player 6
             ['P6Rating','REAL'],     # Player 6 Rating
-            ['P6Score', 'REAL']]     # Player 6 Score
+            ['P6Score', 'REAL'],     # Player 6 Score
+            ['hash',    'TEXT']]     # Player 6 Score
     SCHEMA_PLAYERS = [
             ['name',  'TEXT PRIMARY KEY'],  # Player Name
             ['rating','REAL'],              # Rating
@@ -215,7 +216,7 @@ class DbSqlite():
         self.conn.commit();
 
     # record a game
-    def recordGame(self, players, scores, t=0):
+    def recordGame(self, players, scores, gameHash, t=0):
     
         # Remove all non-players, and sort based on score (hi to low)
         results_raw = zip(scores,players)
@@ -226,13 +227,11 @@ class DbSqlite():
         self.rateGameTrueSkill1v1(results)     # TrueSkill - 1v1 Sub-Games 
                 
         # Create the query
-        sql  = 'INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)'
+        sql  = 'INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)'
         timestamp = time.mktime(time.gmtime())
         if (t != 0):
             timestamp = t
-        
-        print sql
-        
+                
         # Store the game        
         self.c.execute(sql,
                 (timestamp, 
@@ -241,7 +240,8 @@ class DbSqlite():
                 players[2], self.getPlayerRating(players[2]), scores[2], 
                 players[3], self.getPlayerRating(players[3]), scores[3], 
                 players[4], self.getPlayerRating(players[4]), scores[4], 
-                players[5], self.getPlayerRating(players[5]), scores[5])
+                players[5], self.getPlayerRating(players[5]), scores[5],
+                gameHash)
             )
         self.conn.commit()
 
@@ -394,9 +394,10 @@ class DbSqlite():
         cards.sort()
 		        		          
         # Calculate the kingdom hash value
+        # - The hash is a series of ascii hex bytes representing cards in the kingdom
         kingdomHash = ''
         for card in cards:
-            kingdomHash += hex(int(card[3]))[2:]
+            kingdomHash += '{:02x}'.format(int(card[3]))
                         		        		          
         return (cards,kingdomHash)
 		

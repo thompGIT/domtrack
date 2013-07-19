@@ -155,6 +155,8 @@ var playerToT      = []
 /* istats */
 var elem_istatsPlayerChoice
 
+var currShuffleHash = ''
+
 /******************************************************************************
  * inner-mode functions
  *****************************************************************************/
@@ -382,12 +384,13 @@ function recordGame(elem) {
     /* build the ajax request */
     var req = 'cgi/jsIface.py?op=recordGame'
     
-    req += '&p1=' + players[0] + "&p1_vp=" + scores[0]
-    req += '&p2=' + players[1] + "&p2_vp=" + scores[1]
-    req += '&p3=' + players[2] + "&p3_vp=" + scores[2]
-    req += '&p4=' + players[3] + "&p4_vp=" + scores[3]
-    req += '&p5=' + players[4] + "&p5_vp=" + scores[4]
-    req += '&p6=' + players[5] + "&p6_vp=" + scores[5]
+    req += '&p1='  + players[0] + "&p1_vp=" + scores[0]
+    req += '&p2='   + players[1] + "&p2_vp=" + scores[1]
+    req += '&p3='   + players[2] + "&p3_vp=" + scores[2]
+    req += '&p4='   + players[3] + "&p4_vp=" + scores[3]
+    req += '&p5='   + players[4] + "&p5_vp=" + scores[4]
+    req += '&p6='   + players[5] + "&p6_vp=" + scores[5]
+    req += '&hash=' + currShuffleHash
 
     /* do it! */
     ajax(req)
@@ -444,8 +447,8 @@ function shuffleCards() {
     var html  = '<br>'
     var htmlKingdom = ''
     var lines = resp.split("\n")
-    var kingdomHash = lines.splice(0,1)
-    console.log('Kingdom Hash: ' + kingdomHash)
+    currShuffleHash = lines.splice(0,1)
+    html = 'Kingdom Hash: ' + currShuffleHash + '<br>'
     for(var i in lines) {
         var elements = lines[i].split(",")
         if (elements.length > 1) {
