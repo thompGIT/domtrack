@@ -444,6 +444,8 @@ function shuffleCards() {
     var html  = '<br>'
     var htmlKingdom = ''
     var lines = resp.split("\n")
+    var kingdomHash = lines.splice(0,1)
+    console.log('Kingdom Hash: ' + kingdomHash)
     for(var i in lines) {
         var elements = lines[i].split(",")
         if (elements.length > 1) {

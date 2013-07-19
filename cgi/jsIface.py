@@ -82,7 +82,8 @@ if op == 'getGames':
 
 if op == 'shuffle':
 	sets = form['sets'].value
-	cards = db.shuffleCards(sets)
+	cards,kingdomHash = db.shuffleCards(sets)
+	print kingdomHash
 	for c in cards:
 	    print "%s,%s" % (c[0],c[1])
 	   

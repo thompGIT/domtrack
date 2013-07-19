@@ -321,7 +321,7 @@ class DbSqlite():
                          'Followers','Diadem','Bag of Gold']
 		
         # Grab the raw cards from the database
-        sql  = 'SELECT Expansion,Title,Cost_P FROM cards WHERE'
+        sql  = 'SELECT Expansion,Title,Cost_P,id FROM cards WHERE'
         sql += ' (Ru = 0) and '                               # Exclude individual Ruins
         sql += ' (Sh = 0) and '                               # Exclude individual Shelters
         sql += ' (Kn = 0 or Title = \'Sir Martin\') '         # Exclude individual Knights        
@@ -337,63 +337,68 @@ class DbSqlite():
         # Clean up the results
         cards = []
         for x in self.cards_c.fetchall():
-            cards.append([ x[0], x[1], x[2] ])
+            cards.append([ x[0], x[1], x[2], x[3] ])
             	    
         # Add Colonies and Platnum?
         if cards[0][0] == 'Prosperity':
-            cards.append(['Prosperity','Colony',0])
-            cards.append(['Prosperity','Platinum',0])
+            cards.append(['Prosperity','Colony',0,116])
+            cards.append(['Prosperity','Platinum',0,115])
                 
         # Add Shelters?
         if cards[0][0] == 'Dark Ages':
-            cards.append(['Dark Ages','Shelters*',0])
+            cards.append(['Dark Ages','Shelters*',0,169])
 		
         # Add Potions?
         for card in cards:
             if card[2] == 1:
-                cards.append(['Alchemy','Potion',0])
+                cards.append(['Alchemy','Potion',0,87])
                 break
 		
         # Add Prizes?
         for card in cards:
             if card[1] == 'Tournament':
-                cards.append(['Cornucopia','Prizes*',0])
+                cards.append(['Cornucopia','Prizes*',0,117])
                 break
                 
         # Add Knights?
         for card in cards:
             if card[1] == 'Sir Martin':
-                cards.append(['Dark Ages','Knights*',0])
+                cards.append(['Dark Ages','Knights*',0,191])
                 break
 		
         # Add Spoils?
         for card in cards:
             if card[1] == 'Marauder' or card[1] == 'Bandit Camp' or card[1] == 'Pillage':
-                cards.append(['Dark Ages','Spoils',0])
+                cards.append(['Dark Ages','Spoils',0,167])
                 break
                 
         # Add Madman?
         for card in cards:
             if card[1] == 'Hermit':
-                cards.append(['Dark Ages','Madman',0])
+                cards.append(['Dark Ages','Madman',0,162])
                 break
 		
         # Add Mercenary?
         for card in cards:
             if card[1] == 'Urchin':
-                cards.append(['Dark Ages','Mercenary',0])
+                cards.append(['Dark Ages','Mercenary',0,181])
                 break
                 
         # Add Ruins?
         for card in cards:
             if card[1] == 'Marauder' or card[1] == 'Cultist' or card[1] == 'Death Cart':
-                cards.append(['Dark Ages','Ruins*',0])
+                cards.append(['Dark Ages','Ruins*',0,161])
                 break
                 
         # Sort the results to group by expansion
         cards.sort()
 		        		          
-        return cards
+        # Calculate the kingdom hash value
+        kingdomHash = ''
+        for card in cards:
+            kingdomHash += hex(int(card[3]))[2:]
+                        		        		          
+        return (cards,kingdomHash)
 		
     #--------------------------------------------------------------------------
     # DbSqlite::Init
