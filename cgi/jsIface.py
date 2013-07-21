@@ -34,13 +34,18 @@ if 'op' in form:
     op = form['op'].value
 
 if op == 'recordGame':
+    kingdomHash = ''
+    try:
+        kingdomHash = form['hash'].value
+    except Exception:
+        pass
     db.recordGame([form['p1'].value, form['p2'].value, 
                    form['p3'].value, form['p4'].value, 
                    form['p5'].value, form['p6'].value],
                   [float(form['p1_vp'].value), float(form['p2_vp'].value), 
                    float(form['p3_vp'].value), float(form['p4_vp'].value), 
                    float(form['p5_vp'].value), float(form['p6_vp'].value)],
-                  form['hash'].value
+                  kingdomHash
                 );
     print "OK",
 
@@ -84,6 +89,12 @@ if op == 'getGames':
 if op == 'shuffle':
 	sets = form['sets'].value
 	cards,kingdomHash = db.shuffleCards(sets)
+	print kingdomHash
+	for c in cards:
+	    print "%s,%s" % (c[0],c[1])
+	    
+if op == 'shuffleConnect':
+	cards,kingdomHash = db.getLastShuffle()
 	print kingdomHash
 	for c in cards:
 	    print "%s,%s" % (c[0],c[1])

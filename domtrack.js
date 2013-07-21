@@ -442,7 +442,19 @@ function shuffleCards() {
 			
 	// Request the shuffle
     var resp = ajax("cgi/jsIface.py?op=shuffle&sets=" + sets)
-    
+    processShuffleResults(resp)
+
+}
+
+function shuffleConnect() {	
+
+	// Request the shuffle
+    var resp = ajax("cgi/jsIface.py?op=shuffleConnect")
+    processShuffleResults(resp)
+}
+
+function processShuffleResults(resp) {
+
     // Process the results    
     var html  = '<br>'
     var htmlKingdom = ''

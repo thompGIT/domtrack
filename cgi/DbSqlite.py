@@ -57,6 +57,9 @@ class DbSqlite():
             ['mu',    'REAL'],              # Mu
             ['sigma', 'REAL'],              # Sigma
             ['time',  'REAL']]              # Timestamp of last game played
+    SCHEMA_MISC = [
+            ['setting',  'TEXT PRIMARY KEY'],
+            ['value',    'TEXT']]             # Kingdom hash of last shuffled hand
 
     # Database configuration and initialization ------------------------------
     def createDatabase(self):
@@ -70,6 +73,9 @@ class DbSqlite():
         cmd = 'drop table if exists players'
         print cmd
         self.c.execute(cmd);
+        cmd = 'drop table if exists misc'
+        print cmd
+        self.c.execute(cmd);
 
         print '\tCreating new tables'
         cmd = 'CREATE TABLE games (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_GAMES)) + ')'
@@ -79,6 +85,9 @@ class DbSqlite():
         print cmd
         self.c.execute(cmd)
         cmd = 'CREATE TABLE players (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_PLAYERS)) + ')'
+        print cmd
+        self.c.execute(cmd);
+        cmd = 'CREATE TABLE misc (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_MISC)) + ')'
         print cmd
         self.c.execute(cmd);
 
@@ -226,6 +235,10 @@ class DbSqlite():
         # Rate the game using ONLY ONE of the available scoring techniques
         self.rateGameTrueSkill1v1(results)     # TrueSkill - 1v1 Sub-Games 
                 
+        # Fetch the most recent shuffled kingdom hash
+        self.c.execute('SELECT value FROM misc WHERE setting="lasthash"')
+        gameHash = self.c.fetchall()[0][0]
+                
         # Create the query
         sql  = 'INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)'
         timestamp = time.mktime(time.gmtime())
@@ -267,10 +280,8 @@ class DbSqlite():
                     p1R = Rating(p1Stats[1],p1Stats[2])
                     p2R = Rating(p2Stats[1],p2Stats[2])
                     if (results[i][0] != results[j][0]):
-#                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R)
                         new_p1R, new_p2R = env.rate_1vs1(p1R,p2R)
                     else:
-#                        new_p1R, new_p2R = trueskill.rate_1vs1(p1R,p2R, drawn=True)
                         new_p1R, new_p2R = env.rate_1vs1(p1R,p2R, drawn=True)
                     p1TS = new_p1R.mu - (3 * new_p1R.sigma)
                     p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
@@ -307,6 +318,23 @@ class DbSqlite():
     # shuffler related
     #--------------------------------------------------------------------------
     
+    # Create a set of kingdom cards from a hash
+    def hashToCards(self, cHash):
+        cards = []
+        for i in range(0, len(cHash) / 2):
+            cardId = int(cHash[i*2]+cHash[i*2+1],16)
+            self.cards_c.execute('SELECT Expansion,Title,Cost_P,id FROM cards WHERE id=' + str(cardId))
+            for x in self.cards_c.fetchall():
+                cards.append([ x[0], x[1], x[2], x[3] ])                        
+        return cards
+    
+    # return the most recently shuffled kingdom
+    def getLastShuffle(self):
+        self.c.execute('SELECT value FROM misc WHERE setting=\'lasthash\'')
+        kingdomHash = self.c.fetchall()[0][0]
+        cards = self.hashToCards(kingdomHash)
+        return (cards,kingdomHash)
+            
     # shuffle card, return a kingdom
     def shuffleCards(self, setsString):
 		
@@ -398,6 +426,10 @@ class DbSqlite():
         kingdomHash = ''
         for card in cards:
             kingdomHash += '{:02x}'.format(int(card[3]))
+            
+        # Store the kingdom 
+        self.c.execute('INSERT OR REPLACE INTO misc VALUES (?,?)', ('lasthash',kingdomHash,));
+        self.conn.commit();
                         		        		          
         return (cards,kingdomHash)
 		
