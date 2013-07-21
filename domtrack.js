@@ -465,7 +465,8 @@ function processShuffleResults(resp) {
         var elements = lines[i].split(",")
         if (elements.length > 1) {
             var expansion = elements[0].toLowerCase().replace(/\s/g, '')
-            var card = elements[1].toLowerCase().replace(/\s/g, '')
+            var card = elements[1].toLowerCase().replace(/\s/g, '').replace("'", '')
+            console.log(card)
             html += elements[0] + ' - ' + elements[1] + '<br>'
             htmlKingdom += '<img src=\'images/' + expansion + '/' + card + '.jpg\'><br>'
         }
