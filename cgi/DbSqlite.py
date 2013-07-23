@@ -104,7 +104,10 @@ class DbSqlite():
     # return list of players
     def getPlayerList(self):
         self.c.execute('SELECT name from players')
-        return zip(*self.c.fetchall())[0]
+        try:
+            return zip(*self.c.fetchall())[0]
+        except:
+            return ''
         
     # get the player's rating
     def getPlayerRating(self, name):

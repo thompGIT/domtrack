@@ -23,9 +23,7 @@ if ('HTTP_HOST' in os.environ) and (os.environ['HTTP_HOST'] == 'localhost'):
 
 print "Content-Type: text/html\x0d\x0a\x0d\x0a",
 
-db = DbSqlite.DbSqlite()
-playerList = db.getPlayerList()
-
+db   = DbSqlite.DbSqlite()
 form = cgi.FieldStorage()
 
 op = 'play'
@@ -62,6 +60,7 @@ if op == 'getplayers':
 if op == 'addPlayer':
     player = form['player'].value
     db.addPlayer(player)
+    print 'OK'
     
 if op == 'deletePlayer':
     player = form['player'].value
