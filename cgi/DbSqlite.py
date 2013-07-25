@@ -183,6 +183,7 @@ class DbSqlite():
              + ',P4,P4Score,P4Rating' \
              + ',P5,P5Score,P5Rating' \
              + ',P6,P6Score,P6Rating' \
+             + ',hash'                \
              + ' FROM games WHERE time>(?) order by time';
         self.c.execute(sql, (since,))
         games = []
@@ -193,7 +194,8 @@ class DbSqlite():
                            x[7],  x[8],  x[9],   \
                            x[10], x[11], x[12],  \
                            x[13], x[14], x[15],  \
-                           x[16], x[17], x[18]])
+                           x[16], x[17], x[18],  \
+                           x[19]])
         return games
 
     # retrieve all games that had player involved in it
@@ -228,7 +230,7 @@ class DbSqlite():
         self.conn.commit();
 
     # record a game
-    def recordGame(self, players, scores, gameHash, t=0):
+    def recordGame(self, players, scores, gameHash='', t=0):
     
         # Remove all non-players, and sort based on score (hi to low)
         results_raw = zip(scores,players)
@@ -301,12 +303,16 @@ class DbSqlite():
         for game in games:
             players = []
             scores  = []
+            hashes  = []
             for i in range(0,6):
                 players.append(game[1+(i*3)+0])
                 scores.append( game[1+(i*3)+1])
-            gamesToScore.append([int(game[0]),players,scores])        
+                hashes.append( game[1+(i*3)+2])
+            gamesToScore.append([int(game[0]),players,scores,hashes])        
               
-        # Delete the old entries from the database and 
+        # Delete the old entries from the database
+        self.c.execute('DELETE from games');
+        self.conn.commit();
         
         # reset player ratings
         players = self.getPlayerList()
@@ -315,7 +321,7 @@ class DbSqlite():
                     
         # Re-process the stored games
         for g in gamesToScore:
-            self.recordGame(g[1],g[2],g[0])              
+            self.recordGame(g[1],g[2],g[3],g[0])              
                                           
     #--------------------------------------------------------------------------
     # shuffler related
