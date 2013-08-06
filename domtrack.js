@@ -468,7 +468,7 @@ function processShuffleResults(resp) {
             var card = elements[1].toLowerCase().replace(/\s/g, '').replace("'", '')
             console.log(card)
             html += elements[0] + ' - ' + elements[1] + '<br>'
-            htmlKingdom += '<img src=\'images/' + expansion + '/' + card + '.jpg\'><br>'
+            htmlKingdom += '<img width="300" src=\'images/' + expansion + '/' + card + '.jpg\'><br>'
         }
     }
     html += '<br><br>' + htmlKingdom
