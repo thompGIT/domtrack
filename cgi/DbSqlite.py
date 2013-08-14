@@ -67,9 +67,6 @@ class DbSqlite():
         cmd = 'drop table if exists games'
         print cmd
         self.c.execute(cmd);
-        cmd = 'drop table if exists games_trash'
-        print cmd
-        self.c.execute(cmd);
         cmd = 'drop table if exists players'
         print cmd
         self.c.execute(cmd);
@@ -79,9 +76,6 @@ class DbSqlite():
 
         print '\tCreating new tables'
         cmd = 'CREATE TABLE games (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_GAMES)) + ')'
-        print cmd
-        self.c.execute(cmd)
-        cmd = 'CREATE TABLE games_trash (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_GAMES)) + ')'
         print cmd
         self.c.execute(cmd)
         cmd = 'CREATE TABLE players (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_PLAYERS)) + ')'
@@ -219,14 +213,7 @@ class DbSqlite():
 
     # delete a game
     def deleteGame(self, t):
-        self.c.execute('INSERT into games_trash SELECT * from games WHERE time=?', (t,));
         self.c.execute('DELETE from games where time=?', (t,));
-        self.conn.commit();
-
-    # 'undelete a game'
-    def undeleteGame(self, t):
-        self.c.execute('INSERT into games SELECT * from games_trash WHERE time=?', (t,));
-        self.c.execute('DELETE from games_trash where time=?', (t,));
         self.conn.commit();
 
     # record a game
@@ -321,7 +308,21 @@ class DbSqlite():
                     
         # Re-process the stored games
         for g in gamesToScore:
-            self.recordGame(g[1],g[2],g[3],g[0])              
+            self.recordGame(g[1],g[2],g[3],g[0])        
+            
+          
+    #--------------------------------------------------------------------------
+    # game stats related
+    #--------------------------------------------------------------------------
+    def getGameStats(self):
+        
+        # Get games list
+        games = self.getGames()
+        for g in games:
+            print('Hash: ' + g[19])
+        
+        # Get hashes, toss blanks
+        
                                           
     #--------------------------------------------------------------------------
     # shuffler related

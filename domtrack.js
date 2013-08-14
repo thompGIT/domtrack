@@ -1,7 +1,7 @@
 /******************************************************************************
  * debug
  *****************************************************************************/
-var g_DEBUG = 0
+var g_DEBUG = 1
 
 function debug(msg) {
     if(g_DEBUG) {
@@ -268,6 +268,9 @@ function showShuffler() {
 
 function showGameStats() {
     hideAllBut(document.getElementById('istats'))
+    
+    var resp = ajax("cgi/jsIface.py?op=getGameStats")
+    
 }
 
 function showGamesList() {

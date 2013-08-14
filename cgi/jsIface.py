@@ -73,6 +73,10 @@ if op == 'getstats':
         [rating, mu, sigma, t] = db.getPlayerStats(player)
         print "%.2f,%.2f,%.2f,%d" % (rating, mu, sigma, t)
 
+if op == 'getGameStats':
+    db.getGameStats()
+
+
 if op == 'getGames':
     games = db.getGames()
     for g in games:
