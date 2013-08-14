@@ -1,7 +1,7 @@
 /******************************************************************************
  * debug
  *****************************************************************************/
-var g_DEBUG = 1
+var g_DEBUG = 0
 
 function debug(msg) {
     if(g_DEBUG) {
@@ -188,6 +188,7 @@ function domtrackInit(x) {
     elem_p4stats = document.getElementById("p4_stats")
     elem_p5stats = document.getElementById("p5_stats")
     elem_p6stats = document.getElementById("p6_stats")
+    playerElemStats = [elem_p1stats, elem_p2stats, elem_p3stats, elem_p4stats, elem_p5stats, elem_p6stats]
     
     score_p1 = document.getElementById("p1_vp")
     score_p2 = document.getElementById("p2_vp")
@@ -252,7 +253,7 @@ function showPlay() {
     hideAllBut(document.getElementById('play'))
 }
 
-function showStats() {
+function showLeaderboard() {
     hideAllBut(document.getElementById('stats'))
 
     // each graph has a function dedicated to loading it...
@@ -265,15 +266,12 @@ function showShuffler() {
     hideAllBut(document.getElementById('shuffler'))
 }
 
-function showIStats() {
+function showGameStats() {
     hideAllBut(document.getElementById('istats'))
-
-    // graphs don't load until user makes player selection 
 }
 
 function showGamesList() {
     hideAllBut(document.getElementById('games'))
-
     loadGamesList()
 }
 
@@ -352,7 +350,7 @@ function recordGame(elem) {
     var players = []
     var scores  = []
 
-    /* Load all the player names and scores */
+    /* Load all the player names and scores */    
     for(var i in playerElems) {
         if (playerElems[i].value == '') { 
             p = 'none' 
@@ -368,23 +366,10 @@ function recordGame(elem) {
         scores.push(s)
     }
        
-    /* warn against dupliate game records * /
-    if(a1a2b1b2[0] == lastRecordA1 && a1a2b1b2[1] == lastRecordA2 &&
-        a1a2b1b2[2] == lastRecordB1 && a1a2b1b2[3] == lastRecordB2) {
-        if(confirm('Possible duplicate game; detected same players as last game! Continue anyways?') == false) {
-            return
-        }
-    }
-    
-    lastRecordA1 = a1a2b1b2[0]
-    lastRecordA2 = a1a2b1b2[1]
-    lastRecordB1 = a1a2b1b2[2]
-    lastRecordB2 = a1a2b1b2[3]
-
     /* build the ajax request */
     var req = 'cgi/jsIface.py?op=recordGame'
     
-    req += '&p1='  + players[0] + "&p1_vp=" + scores[0]
+    req += '&p1='   + players[0] + "&p1_vp=" + scores[0]
     req += '&p2='   + players[1] + "&p2_vp=" + scores[1]
     req += '&p3='   + players[2] + "&p3_vp=" + scores[2]
     req += '&p4='   + players[3] + "&p4_vp=" + scores[3]
@@ -393,23 +378,45 @@ function recordGame(elem) {
     req += '&hash=' + currShuffleHash
 
     /* do it! */
-    ajax(req)
-
-    /* message * /
-    var alertMsg = 'Win for '
-    if(elem.id == "TeamAWins") {
-        alertMsg += elem_a1.value + " and " + elem_a2.value
+    var pCount = 0
+    for (i in scores) {
+        if (scores[i] != -200) {
+            pCount += 1
+        }
     }
-    else if(elem.id == "TeamBWins") {
-        alertMsg += elem_b1.value + " and " + elem_b2.value
+    if (pCount > 1) {
+        ajax(req)
+    } else {
+        alert('At least 2 players required!')
+        setTimeout("enableRecordGame();", 0)
+        return
     }
 
-    alertMsg += " recorded!" 
+    /* message */
+    var winScore = 0
+    for (s in scores) {
+        if (parseInt(scores[s]) > winScore) {
+            winScore = parseInt(scores[s])
+        }
+    }    
+    var alertMsg = 'Win for '    
+    for (p in players) {
+        if (scores[p] == winScore) {
+            alertMsg += players[p]
+            alertMsg += ' '
+        }
+    }    
+    alertMsg += "recorded!" 
     alert(alertMsg)
 
     /* refresh */
     refreshPlayerDataStore()
     playShowRatings()
+    for (i in scoreElems) {
+        playerElemStats[i].innerHTML = ''
+        playerElems[i].value = ''
+        scoreElems[i].value  = ''
+    }
 
     /* some seconds from now, re-enable */
     setTimeout("enableRecordGame();", disabledDelay)

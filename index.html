@@ -15,12 +15,12 @@
         <!-- MODE SELECTION -->
         <div class="menu">
             DomTrack: 
-            <input type=submit class="menu" onclick="showPlay()"      value="Play" />
-            <input type=submit class="menu" onclick="showShuffler()"  value="Shuffler" />
-            <input type=submit class="menu" onclick="showStats()"     value="Overall Stats" />
-            <input type=submit class="menu" onclick="showIStats()"    value="Individual Stats" />
-            <input type=submit class="menu" onclick="showGamesList()" value="Games History" />
-            <input type=submit class="menu" onclick="showAdmin()"     value="Admin" />
+            <input type=submit class="menu" onclick="showPlay()"        value="Play" />
+            <input type=submit class="menu" onclick="showShuffler()"    value="Shuffler" />
+            <input type=submit class="menu" onclick="showLeaderboard()" value="Leaderboard" />
+            <input type=submit class="menu" onclick="showGameStats()"   value="Game Stats" />
+            <input type=submit class="menu" onclick="showGamesList()"   value="Games History" />
+            <input type=submit class="menu" onclick="showAdmin()"       value="Admin" />
         </div>
 
         <!-- MODE: PLAY -->
@@ -197,16 +197,6 @@
 
         <!-- MODE: INDIVIDUAL STATS -->
         <div id="istats" style="margin: 1em">
-            Choose Player: <select id="istatsPlayerChoice" onchange='istatsPlayerChoice_cb(this)'>
-            </select> 
-            <br><br>
-            <div id="IStatsExtended" style="text-align:center"></div>
-            <br>
-            <div id="ResultsVsPartnersGraph_status"></div>
-            <div id="ResultsVsPartnersGraph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
-            <br>
-            <div id="ResultsVsOpponentsGraph_status"></div>
-            <div id="ResultsVsOpponentsGraph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
         </div>
 
         <!-- MODE: GAMES LIST -->
