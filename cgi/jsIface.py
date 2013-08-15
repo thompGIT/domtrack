@@ -74,8 +74,9 @@ if op == 'getstats':
         print "%.2f,%.2f,%.2f,%d" % (rating, mu, sigma, t)
 
 if op == 'getGameStats':
-    db.getGameStats()
-
+    cardStats = db.getCardStats()
+    for c in cardStats:
+        print "%s,%s,%s" % (c[0],c[1],c[2])
 
 if op == 'getGames':
     games = db.getGames()

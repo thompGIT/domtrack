@@ -314,15 +314,27 @@ class DbSqlite():
     #--------------------------------------------------------------------------
     # game stats related
     #--------------------------------------------------------------------------
-    def getGameStats(self):
+    def getCardStats(self):
         
+        # Grab the raw cards from the database
+        sql  = 'SELECT id,Title FROM cards ORDER BY id'        		
+        self.cards_c.execute(sql)
+        cardStats = []
+        cardStats.append([0,'',0])
+        for x in self.cards_c.fetchall():
+            cardStats.append([ x[0], x[1], 0 ])
+                
         # Get games list
         games = self.getGames()
         for g in games:
-            print('Hash: ' + g[19])
-        
-        # Get hashes, toss blanks
-        
+            cards = self.hashToCards(g[19])
+            for c in cards:
+                index = c[3]
+                cardStats[c[3]][2] += 1
+                
+        cardStats = sorted(cardStats, key=lambda card: card[2], reverse=True)
+               
+        return cardStats
                                           
     #--------------------------------------------------------------------------
     # shuffler related
@@ -335,7 +347,7 @@ class DbSqlite():
             cardId = int(cHash[i*2]+cHash[i*2+1],16)
             self.cards_c.execute('SELECT Expansion,Title,Cost_P,id FROM cards WHERE id=' + str(cardId))
             for x in self.cards_c.fetchall():
-                cards.append([ x[0], x[1], x[2], x[3] ])                        
+                cards.append([ x[0], x[1], x[2], x[3] ])
         return cards
     
     # return the most recently shuffled kingdom

@@ -267,10 +267,8 @@ function showShuffler() {
 }
 
 function showGameStats() {
-    hideAllBut(document.getElementById('istats'))
-    
-    var resp = ajax("cgi/jsIface.py?op=getGameStats")
-    
+    hideAllBut(document.getElementById('istats'))    
+    loadGamesStats()    
 }
 
 function showGamesList() {
@@ -752,8 +750,24 @@ function loadAllRatingsVsGamesGraph() {
 }
 
 /******************************************************************************
- * INDIVIDUAL STATS MODE stuff
+ * GAMES STATS MODE stuff
  *****************************************************************************/
+function loadGamesStats() {
+    var resp = ajax("cgi/jsIface.py?op=getGameStats")
+    var lines = resp.split("\n")
+    
+    var html = ''
+    html += '<h2>Cards Most Played</h2>'
+    
+    for(var i in lines) {
+        var elements = lines[i].split(",")
+        if (elements.length > 1) {
+            html += elements[2] + ' - ' + elements[1] + '<br>'
+        }
+    }
+        
+    document.getElementById("istats").innerHTML = html    
+}
 
 /******************************************************************************
  * GAMES LIST MODE
