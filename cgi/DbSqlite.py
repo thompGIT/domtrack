@@ -33,24 +33,30 @@ class DbSqlite():
     SCHEMA_GAMES = [
             ['time',    'REAL PRIMARY KEY'],  # Timestamp in epoch seconds
             ['P1',      'TEXT'],     # Player 1
-            ['P1Rating','REAL'],     # Player 1 Rating
+            ['P1Rating','REAL'],     # Player 1 Rating - Global
+            ['P1SRating','REAL'],    # Player 1 Rating - Season
             ['P1Score', 'REAL'],     # Player 1 Score
             ['P2',      'TEXT'],     # Player 2
-            ['P2Rating','REAL'],     # Player 2 Rating
+            ['P2Rating','REAL'],     # Player 2 Rating - Global
+            ['P2SRating','REAL'],    # Player 2 Rating - Season
             ['P2Score', 'REAL'],     # Player 2 Score
             ['P3',      'TEXT'],     # Player 3
-            ['P3Rating','REAL'],     # Player 3 Rating
+            ['P3Rating','REAL'],     # Player 3 Rating - Global
+            ['P3SRating','REAL'],    # Player 3 Rating - Season
             ['P3Score', 'REAL'],     # Player 3 Score
             ['P4',      'TEXT'],     # Player 4
-            ['P4Rating','REAL'],     # Player 4 Rating
+            ['P4Rating','REAL'],     # Player 4 Rating - Global
+            ['P4SRating','REAL'],    # Player 4 Rating - Season
             ['P4Score', 'REAL'],     # Player 4 Score
             ['P5',      'TEXT'],     # Player 5
-            ['P5Rating','REAL'],     # Player 5 Rating
+            ['P5Rating','REAL'],     # Player 5 Rating - Global
+            ['P5SRating','REAL'],    # Player 5 Rating - Season
             ['P5Score', 'REAL'],     # Player 5 Score
             ['P6',      'TEXT'],     # Player 6
-            ['P6Rating','REAL'],     # Player 6 Rating
+            ['P6Rating','REAL'],     # Player 6 Rating - Global
+            ['P6SRating','REAL'],    # Player 6 Rating - Season
             ['P6Score', 'REAL'],     # Player 6 Score
-            ['hash',    'TEXT']]     # Player 6 Score
+            ['hash',    'TEXT']]     # Kingdom hash
     SCHEMA_PLAYERS = [
             ['name',  'TEXT PRIMARY KEY'],  # Player Name
             ['rating','REAL'],              # Rating
@@ -59,7 +65,7 @@ class DbSqlite():
             ['time',  'REAL']]              # Timestamp of last game played
     SCHEMA_MISC = [
             ['setting',  'TEXT PRIMARY KEY'],
-            ['value',    'TEXT']]             # Kingdom hash of last shuffled hand
+            ['value',    'TEXT']]             # Misc settings
 
     # Database configuration and initialization ------------------------------
     def createDatabase(self):
