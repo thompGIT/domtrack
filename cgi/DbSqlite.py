@@ -115,7 +115,9 @@ class DbSqlite():
     def getPlayerRating(self, name):
         self.c.execute('SELECT rating from players WHERE name=?', (name,))
         try:
-            return self.c.fetchone()[0]
+            mu    = self.getPlayerMu(name)
+            sigma = self.getPlayerSigma(name)
+            return mu - (3.0 * sigma)
         except:
             return -200
 
@@ -138,10 +140,11 @@ class DbSqlite():
 
     # return a list [rating, mu, sigma, time]
     def getPlayerStats(self, name):
-        self.c.execute('SELECT rating,mu,sigma,time from players WHERE name=?', (name,))        
-        sRaw  = self.c.fetchall()[0] 
-        sigma = self.degradeSigma(self.getPlayerT(name), sRaw[2])
-        stats = (sRaw[0], sRaw[1], sigma, sRaw[3])
+        rating = self.getPlayerRating(name)
+        mu     = self.getPlayerMu(name)
+        sigma  = self.getPlayerSigma(name)
+        t      = self.getPlayerT(name)
+        stats  = (rating, mu, sigma, mu)
         return stats
 
     # add a new player to the system
