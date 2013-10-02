@@ -15,6 +15,8 @@ cardsDbFile = 'cards.db'
 
 BASE_RATING   =   0.0
 
+SIGMA_DEGRADE_RATE_PER_HOUR = 0.1 / 24.0    # Rate of sigma degrade (or loss of confidense in rating)
+
 # TrueSkill environment variables
 BASE_MU       =  25.0
 BASE_SIGMA    = BASE_MU / 3.0
@@ -119,13 +121,15 @@ class DbSqlite():
 
     # get the player's mu
     def getPlayerMu(self, name):
-        self.c.execute('SELECT mu from players WHERE name=?', (name,))
+        self.c.execute('SELECT mu from players WHERE name=?', (name,))        
         return self.c.fetchone()[0]
         
     # get the player's sigma
     def getPlayerSigma(self, name):
         self.c.execute('SELECT sigma from players WHERE name=?', (name,))
-        return self.c.fetchone()[0]
+        sigma = self.c.fetchone()[0]
+        sigma = self.degradeSigma(self.getPlayerT(name), sigma)        
+        return sigma
 
     # get the player's T (last time played)
     def getPlayerT(self, name):
@@ -134,8 +138,11 @@ class DbSqlite():
 
     # return a list [rating, mu, sigma, time]
     def getPlayerStats(self, name):
-        self.c.execute('SELECT rating,mu,sigma,time from players WHERE name=?', (name,))
-        return self.c.fetchall()[0]
+        self.c.execute('SELECT rating,mu,sigma,time from players WHERE name=?', (name,))        
+        sRaw  = self.c.fetchall()[0] 
+        sigma = self.degradeSigma(self.getPlayerT(name), sRaw[2])
+        stats = (sRaw[0], sRaw[1], sigma, sRaw[3])
+        return stats
 
     # add a new player to the system
     def addPlayer(self, name, rating=BASE_RATING, mu=BASE_MU, sigma=BASE_SIGMA, t=0):
@@ -168,6 +175,16 @@ class DbSqlite():
                 (listStats[0], listStats[1], listStats[2], listStats[3], name)
             )
         self.conn.commit()
+            
+    # adjust a sigma value for time based degradation
+    def degradeSigma(self, t, s):
+        currentTime   = time.mktime(time.gmtime())
+        if (t > currentTime):
+            t = currentTime
+        sigma = s + (((currentTime - t) / (60 * 60)) * SIGMA_DEGRADE_RATE_PER_HOUR)
+        if (sigma > BASE_SIGMA):
+            sigma = BASE_SIGMA
+        return sigma
 
     #--------------------------------------------------------------------------
     # game related
