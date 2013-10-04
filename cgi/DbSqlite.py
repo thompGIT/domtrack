@@ -235,8 +235,26 @@ class DbSqlite():
                           'p4':str(x[7]),  'p4_r':x[8],  \
                           'p5':str(x[9]),  'p5_r':x[10], \
                           'p6':str(x[11]), 'p6_r':x[12]})
-        return games
 
+        return games
+            
+    # retrieve the number of first place finishes per player
+    def getPlayerWinCount(self):
+        self.c.execute('SELECT time,P1,P1Score,P2,P2Score,P3,P3Score,P4,P4Score,P5,P5Score,P6,P6Score from games order by time')
+        scores  = []
+        players = []
+        wins    = []
+        for x in self.c.fetchall():
+            scores.append([x[2],x[4],x[6],x[8],x[10],x[12]])
+            players.append([x[1],x[3],x[5],x[7],x[9],x[11]])                          
+        games = zip(scores,players)
+        
+        for g in games:
+            results_raw = zip(g[0],g[1])
+            results = filter(lambda a: a[1] != 'none', results_raw)
+            results.sort(reverse=True)
+            print results
+            
     # delete a game
     def deleteGame(self, t):
         self.c.execute('DELETE from games where time=?', (t,));
