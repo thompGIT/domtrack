@@ -33,32 +33,32 @@ class DbSqlite():
     # database maintenance
     #--------------------------------------------------------------------------
     SCHEMA_GAMES = [
-            ['time',    'REAL PRIMARY KEY'],  # Timestamp in epoch seconds
-            ['P1',      'TEXT'],     # Player 1
-            ['P1Rating','REAL'],     # Player 1 Rating - Global
+            ['time',     'REAL PRIMARY KEY'],  # Timestamp in epoch seconds
+            ['P1',       'TEXT'],    # Player 1
+            ['P1Rating', 'REAL'],    # Player 1 Rating - Global
             ['P1SRating','REAL'],    # Player 1 Rating - Season
-            ['P1Score', 'REAL'],     # Player 1 Score
-            ['P2',      'TEXT'],     # Player 2
-            ['P2Rating','REAL'],     # Player 2 Rating - Global
+            ['P1Score',  'REAL'],    # Player 1 Score
+            ['P2',       'TEXT'],    # Player 2
+            ['P2Rating', 'REAL'],    # Player 2 Rating - Global
             ['P2SRating','REAL'],    # Player 2 Rating - Season
-            ['P2Score', 'REAL'],     # Player 2 Score
-            ['P3',      'TEXT'],     # Player 3
-            ['P3Rating','REAL'],     # Player 3 Rating - Global
+            ['P2Score',  'REAL'],    # Player 2 Score
+            ['P3',       'TEXT'],    # Player 3
+            ['P3Rating', 'REAL'],    # Player 3 Rating - Global
             ['P3SRating','REAL'],    # Player 3 Rating - Season
-            ['P3Score', 'REAL'],     # Player 3 Score
-            ['P4',      'TEXT'],     # Player 4
-            ['P4Rating','REAL'],     # Player 4 Rating - Global
+            ['P3Score',  'REAL'],    # Player 3 Score
+            ['P4',       'TEXT'],    # Player 4
+            ['P4Rating', 'REAL'],    # Player 4 Rating - Global
             ['P4SRating','REAL'],    # Player 4 Rating - Season
-            ['P4Score', 'REAL'],     # Player 4 Score
-            ['P5',      'TEXT'],     # Player 5
-            ['P5Rating','REAL'],     # Player 5 Rating - Global
+            ['P4Score',  'REAL'],    # Player 4 Score
+            ['P5',       'TEXT'],    # Player 5
+            ['P5Rating', 'REAL'],    # Player 5 Rating - Global
             ['P5SRating','REAL'],    # Player 5 Rating - Season
-            ['P5Score', 'REAL'],     # Player 5 Score
-            ['P6',      'TEXT'],     # Player 6
-            ['P6Rating','REAL'],     # Player 6 Rating - Global
+            ['P5Score',  'REAL'],    # Player 5 Score
+            ['P6',       'TEXT'],    # Player 6
+            ['P6Rating', 'REAL'],    # Player 6 Rating - Global
             ['P6SRating','REAL'],    # Player 6 Rating - Season
-            ['P6Score', 'REAL'],     # Player 6 Score
-            ['hash',    'TEXT']]     # Kingdom hash
+            ['P6Score',  'REAL'],    # Player 6 Score
+            ['hash',     'TEXT']]    # Kingdom hash
     SCHEMA_PLAYERS = [
             ['name',  'TEXT PRIMARY KEY'],  # Player Name
             ['rating','REAL'],              # Rating
@@ -67,30 +67,24 @@ class DbSqlite():
             ['time',  'REAL']]              # Timestamp of last game played
     SCHEMA_MISC = [
             ['setting',  'TEXT PRIMARY KEY'],
-            ['value',    'TEXT']]             # Misc settings
+            ['value',    'TEXT']]           # Misc settings
 
     # Database configuration and initialization ------------------------------
     def createDatabase(self):
         print '\tDropping old tables'
         cmd = 'drop table if exists games'
-        print cmd
         self.c.execute(cmd);
         cmd = 'drop table if exists players'
-        print cmd
         self.c.execute(cmd);
         cmd = 'drop table if exists misc'
-        print cmd
         self.c.execute(cmd);
 
         print '\tCreating new tables'
         cmd = 'CREATE TABLE games (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_GAMES)) + ')'
-        print cmd
         self.c.execute(cmd)
         cmd = 'CREATE TABLE players (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_PLAYERS)) + ')'
-        print cmd
         self.c.execute(cmd);
         cmd = 'CREATE TABLE misc (' + ','.join(map(lambda x: ' '.join(x), self.SCHEMA_MISC)) + ')'
-        print cmd
         self.c.execute(cmd);
 
         self.conn.commit()

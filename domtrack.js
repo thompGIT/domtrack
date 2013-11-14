@@ -10,6 +10,28 @@ function debug(msg) {
 }
 
 /******************************************************************************
+ * GLOBALS
+ *****************************************************************************/
+var TEMPLATE_PlayerInput = "\
+	<td bgcolor='#5882FA'>\
+		<div class=playerSelect>\
+			<div class=playerSelectTitle>PLAYER_TITLE_CAPS:</div>\
+			<div class=playerSelectCombo>\
+				<select id=PLAYER_TITLE \
+					class=comboPlayer \
+					onchange='selChange_cb(this)'> \
+				</select> \
+			</div> \
+			<div class=playerSelectScore> \
+				<input id=PLAYER_TITLE_vp \
+					class=tbVP \
+					type='number'> \
+				</input> \
+			</div> \
+		</div> \
+	</td>"		
+
+/******************************************************************************
  * UTILS
  *****************************************************************************/
 function ajax(url) {
@@ -164,6 +186,14 @@ var currShuffleHash = ''
 /* called when the page loads */
 function domtrackInit(x) {
 
+	// Play Screen - Create the player input rows
+    initializePlayerInput('PLAYER_INPUT_p1')
+    initializePlayerInput('PLAYER_INPUT_p2')
+    initializePlayerInput('PLAYER_INPUT_p3')
+    initializePlayerInput('PLAYER_INPUT_p4')
+    initializePlayerInput('PLAYER_INPUT_p5')
+    initializePlayerInput('PLAYER_INPUT_p6')
+
     /* overall modes; play is the default */
     showElems.push(document.getElementById("play"))
     showElems.push(document.getElementById("shuffler"))
@@ -214,10 +244,21 @@ function domtrackInit(x) {
             elems[i].innerHTML += "<option>" + playerNames[j] + "</option>"
         }
     }
+    
 
     /* populate the ratings */
-    playShowRatings()
+//    playShowRatings()
 }
+
+/* Play Screen - Create a player input box */
+function initializePlayerInput(p) {			
+	var playerTitle = p.replace('PLAYER_INPUT_','')	
+	var html = TEMPLATE_PlayerInput
+	html = html.replace(/PLAYER_TITLE_CAPS/g,playerTitle.toUpperCase())
+	html = html.replace(/PLAYER_TITLE/g,playerTitle)	
+	document.getElementById(p).innerHTML = html
+}
+
 
 function refreshPlayerDataStore() {
     var resp = ajax('cgi/jsIface.py?op=getplayers')
@@ -283,9 +324,10 @@ function showAdmin() {
 /******************************************************************************
  * PLAY MODE stuff
  *****************************************************************************/
+ /*
 function playShowRatings() {
 
-    /* update statistics */
+    /* update statistics * /
     var enameToElemStats   = []
     enameToElemStats["p1"] = elem_p1stats
     enameToElemStats["p2"] = elem_p2stats
@@ -303,12 +345,12 @@ function playShowRatings() {
         }
 
         else {
-            /* user chose the initial blank entry */
+            /* user chose the initial blank entry * /
             enameToElemStats[playerElems[i].id].innerHTML = ""
         }
     }
 }
-
+*/
 function selChange_cb(elem) {
 
     /* force other drop downs away from the name we just selected */
@@ -328,7 +370,7 @@ function selChange_cb(elem) {
     }
 
     /* populate ratings */
-    playShowRatings()
+//    playShowRatings()
 }
 
 function disableRecordGame() {
@@ -412,7 +454,7 @@ function recordGame(elem) {
 
     /* refresh */
     refreshPlayerDataStore()
-    playShowRatings()
+//    playShowRatings()
     for (i in scoreElems) {
         playerElemStats[i].innerHTML = ''
         playerElems[i].value = ''
@@ -433,7 +475,7 @@ function clearPlayers(elem)
         scoreElems[s].value = ''
     }   
     
-    playShowRatings()
+//    playShowRatings()
 }
 
 function shuffleCards() {	
