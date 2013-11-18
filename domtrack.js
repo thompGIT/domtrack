@@ -628,7 +628,9 @@ function loadAllRatingsHistoryGraph() {
     /* build the series as an array of player objects */
     var seriesData = []
     for(var i in playerList) {
-        seriesData.push(playerToObject[playerList[i]])
+        if (playerList[i] != "none") {
+            seriesData.push(playerToObject[playerList[i]])
+        }
     }
 
     /* finally, render the graph into this div */
@@ -740,7 +742,9 @@ function loadAllRatingsVsGamesGraph() {
     var seriesData = []
     for(var i in playerList) {
         playerToObject[playerList[i]]['nGames'] = undefined
-        seriesData.push(playerToObject[playerList[i]])
+        if (playerList[i] != "none") {
+            seriesData.push(playerToObject[playerList[i]])
+        }
     }
 
     /* finally, render the graph into this div */
