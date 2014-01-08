@@ -71,7 +71,7 @@ if op == 'getstats':
     pl = db.getPlayerList()
     if player in pl:
         [rating, mu, sigma, t] = db.getPlayerStats(player)
-        print "%.2f,%.2f,%.2f,%d" % (rating, mu, sigma, t)
+        print "%.3f,%.3f,%.3f,%d" % (rating, mu, sigma, t)
 
 if op == 'getGameStats':
     cardStats = db.getCardStats()
@@ -81,7 +81,7 @@ if op == 'getGameStats':
 if op == 'getGames':
     games = db.getGames()
     for g in games:
-        print "%d,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f,%s,%d,%.2f" % (
+        print "%d,%s,%d,%.3f,%s,%d,%.3f,%s,%d,%.3f,%s,%d,%.3f,%s,%d,%.3f,%s,%d,%.3f" % (
                              g[0], 
                              g[1],  g[2],  g[3],
                              g[4],  g[5],  g[6],
