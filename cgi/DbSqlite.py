@@ -8,7 +8,7 @@ import string
 import time
 import os
 import trueskill
-from trueskill import Rating
+from trueskill import Rating, TrueSkill
 
 dbFile      = 'domtrack.db'
 cardsDbFile = 'cards.db'
@@ -124,7 +124,7 @@ class DbSqlite():
     def getPlayerSigma(self, name):
         self.c.execute('SELECT sigma from players WHERE name=?', (name,))
         sigma = self.c.fetchone()[0]
-        sigma = self.degradeSigma(self.getPlayerT(name), sigma)        
+        #sigma = self.degradeSigma(self.getPlayerT(name), sigma)        # Broken
         return sigma
 
     # get the player's T (last time played)
@@ -138,7 +138,7 @@ class DbSqlite():
         mu     = self.getPlayerMu(name)
         sigma  = self.getPlayerSigma(name)
         t      = self.getPlayerT(name)
-        stats  = (rating, mu, sigma, mu)
+        stats  = (rating, mu, sigma, t)
         return stats
 
     # add a new player to the system
@@ -287,38 +287,31 @@ class DbSqlite():
                 gameHash)
             )
         self.conn.commit()
-
-    # Scoring Technique - TrueSkill - Sub-Games
-    #   Each multiplayer game is broken down into 1v1 matches for all players
-    #   playing.
-    #   Tie games are not calculated at all!
+                    
+    # Scoring Technique - TrueSkill
+    #   Each game is rated as a FFA of 1 person teams.
     def rateGameTrueSkill1v1(self, results):
-            
-        # Initialize the TS environment
-        env = trueskill.TrueSkill(mu=BASE_MU,
-                                  sigma=BASE_SIGMA,
-                                  beta=BASE_BETA,
-                                  tau=BASE_TAU,
-                                  draw_probability=BASE_DRAWPROB)
-            
-        # Calculate all valid sub-games
+           
+        # Establish TrueSkill environment
+        env = TrueSkill()
+
+        # Rate the FFA game
+        rating_groups = []
         for i in range(0,len(results)):
-            for j in range(i,len(results)):
-                if (i != j):                                # A player cannot play himself
-                    p1Stats = self.getPlayerStats(results[i][1])
-                    p2Stats = self.getPlayerStats(results[j][1])
-                    p1R = Rating(p1Stats[1],p1Stats[2])
-                    p2R = Rating(p2Stats[1],p2Stats[2])
-                    if (results[i][0] != results[j][0]):
-                        new_p1R, new_p2R = env.rate_1vs1(p1R,p2R)
-                    else:
-                        new_p1R, new_p2R = env.rate_1vs1(p1R,p2R, drawn=True)
-                    p1TS = new_p1R.mu - (3 * new_p1R.sigma)
-                    p2TS = new_p2R.mu - (3 * new_p2R.sigma)                              
-                    self.setPlayerStats(results[i][1], [p1TS,new_p1R.mu, new_p1R.sigma, p1Stats[3]])
-                    self.setPlayerStats(results[j][1], [p2TS,new_p2R.mu, new_p2R.sigma, p2Stats[3]])
-             
-                 
+            mu    = self.getPlayerMu(results[i][1])
+            sigma = self.getPlayerSigma(results[i][1])
+            rating = env.create_rating(mu, sigma)
+            rating_groups.append((rating,))            
+        rated_rating_groups = env.rate(rating_groups)
+
+        # Record the results in the database
+        for i in range(0,len(rated_rating_groups)):
+            mu     = rated_rating_groups[i][0].mu
+            sigma  = rated_rating_groups[i][0].sigma
+            rating = mu - (3 * sigma)
+            self.setPlayerStats(results[i][1], [rating, mu, sigma, 0])
+           
+                        
     # recalculate all scores in the games history database
     def recalculateScores(self):
         
