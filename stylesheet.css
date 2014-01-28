@@ -139,6 +139,24 @@ div.gameLogPlayerEntryWin {
     box-shadow: 5px 5px 5px #888888;
 }
 
+#shuffler {
+    margin: 1em;
+}
+
+#shuffler_options_wrapper {
+    width: 100%;
+}
+
+#shuffler_kingdom_list {
+    width: 220px;
+    float: left;
+}
+
+#shuffler_options_list {
+    font-size: small;
+    float: left;
+}
+
 .tbVP {
 	width:  80px;
 	height: 40px;

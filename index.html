@@ -51,21 +51,42 @@
         </div>
         
         <!-- MODE: Shuffler -->
-        <div id="shuffler" style="margin: 1em">
-			<form id="form_shuffle">
-				<input type="checkbox" name="sets" value="Base">Base<br>
-				<input type="checkbox" name="sets" value="Alchemy">Alchemy<br>
-				<input type="checkbox" name="sets" value="Cornucopia">Cornucopia<br>
-				<input type="checkbox" name="sets" value="Dark Ages">Dark Ages<br>
-				<input type="checkbox" name="sets" value="Hinterlands">Hinterlands<br>
-				<input type="checkbox" name="sets" value="Intrigue">Intrigue<br>
-				<input type="checkbox" name="sets" value="Prosperity">Prosperity<br>
-				<input type="checkbox" name="sets" value="Promo">Promo<br>
-				<input type="checkbox" name="sets" value="Seaside">Seaside<br>
-				<input type="checkbox" name="sets" value="Guilds">Guilds<br>
-			</form>
-            <input type=submit name="submitShuffle"        class="SubmitButton" value="Shuffle"            onClick="shuffleCards(this)">
-            <input type=submit name="submitShuffleConnect" class="SubmitButton" value="Get Active Shuffle" onClick="shuffleConnect(this)">
+        <div id="shuffler">
+			<div id="shuffler_options_wrapper">
+				<div id="shuffler_kingdom_list">
+					<form id="form_shuffle">
+						<input type="checkbox" name="sets" value="Base">Base<br>
+						<input type="checkbox" name="sets" value="Alchemy">Alchemy<br>
+						<input type="checkbox" name="sets" value="Cornucopia">Cornucopia<br>
+						<input type="checkbox" name="sets" value="Dark Ages">Dark Ages<br>
+						<input type="checkbox" name="sets" value="Hinterlands">Hinterlands<br>
+						<input type="checkbox" name="sets" value="Intrigue">Intrigue<br>
+						<input type="checkbox" name="sets" value="Prosperity">Prosperity<br>
+						<input type="checkbox" name="sets" value="Promo">Promo<br>
+						<input type="checkbox" name="sets" value="Seaside">Seaside<br>
+						<input type="checkbox" name="sets" value="Guilds">Guilds<br>
+					</form>
+				</div>
+				<div id="shuffler_options_list">
+					<div>&nbsp&nbsp+&nbsp&nbsp&nbsp&nbsp&nbsp-</div>
+					<form id="form_shuffle_options">
+						<input type="radio" name="OneFromEach" value="yes">&nbsp
+						<input type="radio" name="OneFromEach" value="no">  One From Each<br>
+						<input type="radio" name="Trasher" value="yes">&nbsp
+						<input type="radio" name="Trasher" value="no">  Trasher<br>
+						<input type="radio" name="Curses" value="yes">&nbsp
+						<input type="radio" name="Curses" value="no">  Curses<br>
+						<input type="radio" name="Actions" value="yes">&nbsp
+						<input type="radio" name="Actions" value="no">  Actions<br>
+						<input type="radio" name="Attacks" value="yes">&nbsp
+						<input type="radio" name="Attacks" value="no">  Attacks<br>
+					</form>
+				</div>
+			</div>
+			<div style="clear:both">
+				<input type=submit name="submitShuffle"        class="SubmitButton" value="Shuffle"            onClick="shuffleCards(this)">
+				<input type=submit name="submitShuffleConnect" class="SubmitButton" value="Get Active Shuffle" onClick="shuffleConnect(this)">
+			</div>
             <div id="ShuffleResults"></div>
         </div>
 
