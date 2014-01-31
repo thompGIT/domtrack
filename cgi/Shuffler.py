@@ -16,7 +16,10 @@ class Shuffler():
         cards = []
         for i in range(0, len(cHash) / 2):
             cardId = int(cHash[i*2]+cHash[i*2+1],16)
-            self.cards_c.execute('SELECT Expansion,Title,Cost_P,id FROM cards WHERE id=' + str(cardId))
+            try:
+                self.cards_c.execute('SELECT Expansion,Title,Cost_P,id FROM cards WHERE id=' + str(cardId))
+            except sqlite3.Error, e:
+                print 'Error %s:' % e.args[0]            
             for x in self.cards_c.fetchall():
                 cards.append([ x[0], x[1], x[2], x[3] ])
         return cards
@@ -41,10 +44,10 @@ class Shuffler():
 		
         # Grab the raw cards from the database
         sql  = 'SELECT Expansion,Title,Cost_P,id FROM cards WHERE'
-        sql += ' (Ru = 0) and '                               # Exclude individual Ruins
-        sql += ' (Sh = 0) and '                               # Exclude individual Shelters
-        sql += ' (Kn = 0 or Title = \'Sir Martin\') '         # Exclude individual Knights        
-        for c in excludedCards:                               # Exclude special cards
+        sql += ' (Ruin    = 0) and '                               # Exclude individual Ruins
+        sql += ' (Shelter = 0) and '                               # Exclude individual Shelters
+        sql += ' (Knight  = 0 or Title = \'Sir Martin\') '         # Exclude individual Knights        
+        for c in excludedCards:                                    # Exclude special cards
             sql += ' and Title != \'' + c + '\''        
         sql += ' and ('
         for s in sets:                                        # Only pull from requested expansions
@@ -119,13 +122,13 @@ class Shuffler():
             kingdomHash += '{:02x}'.format(int(card[3]))
             
         # Store the kingdom 
-        self.c.execute('INSERT OR REPLACE INTO misc VALUES (?,?)', ('lasthash',kingdomHash,));
-        self.conn.commit();
+#        self.c.execute('INSERT OR REPLACE INTO misc VALUES (?,?)', ('lasthash',kingdomHash,));
+#        self.conn.commit();
                         		        		          
         return (cards,kingdomHash)
 		
     #--------------------------------------------------------------------------
-    # Shuffler::Init
+    # Shuffler::__init__
     #--------------------------------------------------------------------------
     def __init__(self, cardsDb):
         
@@ -139,6 +142,17 @@ class Shuffler():
             self.cards_conn = sqlite3.connect(cardsDb)
             self.cards_c = self.cards_conn.cursor()
             
+        except sqlite3.Error, e:
+            print 'Error %s:' % e.args[0]
+            sys.exit(1)
+            
+    #--------------------------------------------------------------------------
+    # Shuffler::__del__
+    #--------------------------------------------------------------------------
+    def __del__(self):
+        # Close the cards database
+        try:
+            self.cards_conn.close()
         except sqlite3.Error, e:
             print 'Error %s:' % e.args[0]
             sys.exit(1)
