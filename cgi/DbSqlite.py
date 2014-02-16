@@ -322,12 +322,11 @@ class DbSqlite():
         for game in games:
             players = []
             scores  = []
-            hashes  = []
             for i in range(0,6):
                 players.append(game[1+(i*3)+0])
                 scores.append( game[1+(i*3)+1])
-                hashes.append( game[1+(i*3)+2])
-            gamesToScore.append([int(game[0]),players,scores,hashes])        
+            gamehash = game[19]
+            gamesToScore.append([int(game[0]),players,scores,gamehash])
               
         # Delete the old entries from the database
         self.c.execute('DELETE from games');
