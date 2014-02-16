@@ -265,9 +265,10 @@ class DbSqlite():
         # Rate the game using ONLY ONE of the available scoring techniques
         self.rateGameTrueSkill1v1(results)     # TrueSkill - 1v1 Sub-Games 
                 
-        # Fetch the most recent shuffled kingdom hash
-        self.c.execute('SELECT value FROM misc WHERE setting="lasthash"')
-        gameHash = self.c.fetchall()[0][0]
+        # Fetch the most recent shuffled kingdom hash if the previous hash is not passed in
+        if (gameHash == ''):
+            self.c.execute('SELECT value FROM misc WHERE setting="lasthash"')
+            gameHash = self.c.fetchall()[0][0]
                 
         # Create the query
         sql  = 'INSERT OR REPLACE into games values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)'
@@ -284,7 +285,7 @@ class DbSqlite():
                 players[3], self.getPlayerRating(players[3]), scores[3], 
                 players[4], self.getPlayerRating(players[4]), scores[4], 
                 players[5], self.getPlayerRating(players[5]), scores[5],
-                gameHash)
+                str(gameHash))
             )
         self.conn.commit()
                     
